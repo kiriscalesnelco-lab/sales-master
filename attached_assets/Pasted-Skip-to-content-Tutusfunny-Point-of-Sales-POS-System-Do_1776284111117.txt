@@ -1,0 +1,219 @@
+Skip to content
+Tutusfunny
+Point of Sales (POS) System
+Documentation
+Leave a Comment / Uncategorized / By admin this tutorial we will discuss about how to make the point of sales system step by step.
+ 
+Main Function of the System
+ 	We sell Products / Services 
+Customer / Client
+ 	We Purchase Products	> Supplier /
+Vendor
+ 	Sales Return — Customer Return the product
+ 	Purchase Return	— Return Product to Supplier
+Stock Maintain
+ 	Users Maintenance
+, Ledger
+ 	Dashboard
+Process
+ 	Sales Process - Customer / Qty /
+Product Details / Price / Price Level /
+Date of Sales / Loyalty Points / Discounts   Purchase Process
+ 	Inventory / Stock Maintenance —
+Product Details / Pricing / Stock /
+Supplier / Brand / Category
+ 	Reports - Daily / Weekly / Monthly /
+Yearly
+, Sales
+ 	Purchase
+ 	Sales Return
+ 	Purchase Return
+ 	Stock Movement
+, Cash Book
+ 	Supplier Reports
+Customer Reports
+Inventory (Stock) - Product
+Based Business
+ 	Stock
+ 	Product Details Table
+ 	Product ID (String) - Manual / Auto
+Generate (Random / Serial)
+ 	Product Name / Description (String)
+ 	Product Category ID- Dropdown Box Category Table
+ 	Product Brand ID- Dropdown BoxBrand Table
+ 	Product Barcode - Auto Generate /
+Manual Enter
+ 	Product Price (Decimal) - Sales Price /
+MRP
+ 	Product Cost (Decimal)
+ 	Product Discount (Decimal) - Fixed
+Amount / Percentage
+Expiry Status -Y/ N
+ 	Expiry Item Movement - Expiry Date
+ 	Valuation Method (Cost) - FIFO / LIFO /
+Average - Choose
+ 	Active Status - Active / Inactive (Bool)
+Category Table
+ 	Product Category ID
+ 	Product Category Name
+Brand Table
+ 	Product Brand ID
+ 	Product Brand Name
+Expiry Details
+ 	Expiry ID (Primary Key)
+ 	Product Id
+ 	Batch No / Lot No
+ 	Manufacture Date
+ 	Expiry Date
+ 
+Stock Movement Table
+(Sales / Purchase Return - Stock Out,
+Purchase / Sales Return - Stock In)   Stock Movement Id - Auto Generate /
+Primary
+ 	Stock Movement Date
+ 	Product Id
+ 	Stock-ln Qty
+ 	Stock-Out Qty , Detail
+Note:
+Stock Out:
+ 	Sales - Sales Date, Product Id, Stock
+Out (Sales Qty), Sales (Details)
+ 	Purchase Return - Purchase Return
+Date, Product ID, Stock Out (Purchase
+Return Qty), Purchase Return
+Stock In
+ 	Purchase - Purchase Date, Product Id, Stock In(Purchase Qty), Purchase
+Sales Return - Sales Return Date, Product Id, Stock In(Sales Return Qty),
+Sales Return
+Purchase
+Supplier Table
+Supplier ID (Primary)
+Supplier Name
+Address
+City
+Contact Person
+Contact No
+Credit Limit
+Account No - Chart of Account Account Payable
+Purchase Table
+Purchase ID (Primary) - Generate
+Purchase Date
+Supplier ID
+Supplier Bill No
+Purchase Amount
+Purchase Detail Table
+Purchase ID
+Product Id
+Product Cost
+Product Price
+Product Discount Purchase Qty
+Purchase Return Table Purchase Return ID (Primary) Generate
+Purchase Return Date
+Supplier ID
+Supplier Bill No
+Purchase Return Amount
+Purchase Return Detail Table
+Purchase Return ID
+Product Id
+Product Cost
+Product Discount
+Purchase Return Qty
+Sales
+Customer Table
+Customer ID (Primary)
+Customer Name
+Address
+City
+Contact Person
+Contact No
+Credit Limit
+Account No - Chart of Account Account Receivable
+Sales Table
+Sales ID (Primary) - Generate
+Sales Date / Bill Date
+Customer ID
+Bill No - Auto Generate
+ 	Bill Amount
+ 	Sales Detail Table
+ 	Sales ID
+ 	Product Id
+ 	Product Sales Price
+ 	Product Discount   Purchase Qty
+ 	Sales Return Table
+ 	Sales Return ID (Primary) - Generate
+ 	Sales Return Date
+ 	Customer ID
+, Bill No - Sales Bill
+ 	Sales Return Amount
+ 	Sales Return Detail Table
+ 	Sales Return ID
+ 	Product Id
+ 	Sales Price
+ 	Product Discount
+ 
+Sales Return Qty
+ 	Payment Transaction Table
+ 	Date
+, Bill No
+ 	Payment Type - Cash / Cheque / Credit
+Card / Voucher / Loyalty Points
+ 	Payment Amount
+Payment Transaction Table
+Date	Bill No Payment
+Type	Payment Amount
+10-12-2020	1
+Cash	500.00
+10-12-2020	1	Card
+1,500.00
+ 	Loya lty Ta ble
+ 	Customer ID
+ 	Card Expiry Date
+ 	Card Type
+ 	Points Calculation Amount - 100
+Points Amount - I
+, Total Points - 150
+ 	Loyalty Transaction Table - Add Points
+/ Deduct Points
+ 	Transaction Id
+ 	Date of Transaction
+ 	Points Earned / Point Deducted
+Points Earned = Sales Amount / Points
+Calculation Amount
+Points Redeemed = Redeemed Points *
+Points Amount
+ 	Accounting Tables
+ 	Ledger Table - Transaction Table Double Entry
+ 	Account No 1 1001 - Cash In Hand
+51001 Sales A/C
+ 	Details of Transaction
+	Sales	Sales
+Debit Amount
+	5000.00	o .00
+ 	Credit Amount
+0.00 5,000.00
+ 	Chart of Account
+ 	Accounts Group Id 1
+ 	Parent Account No 11000 - Current
+Asset
+ 	Account No 1 1001
+ 	Name of Account Cash In Hand
+ 	Accounts Group (Fixed)
+ 	Group Id 1
+ 	Group Name Assets
+ 	Starting Account No 10000
+ 	Ending Account No 19999
+Assets + Liabilities = Equity
+ 
+1st - 2021-01-31 - 10 -	2000/=
+2nd - 2020-12-31 - 05 - 220/= - 1 100/ 
+15	3100/=	206.50
+Previous Post
+Next Post
+Leave a Comment
+Your email address will not be published. Required fields are marked *
+Type here..
+Name*
+Email*
+Website
+Save my name, email, and website in this browser for the next time I comment. Please enter an answer in digits: thirteen - one =
+Copyright 0 2026 Tutusfunny I Powered by Astra Word Press Theme

@@ -3,20 +3,42 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Point of Sales System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: categories
+    description: Product categories
+  - name: brands
+    description: Product brands
+  - name: products
+    description: Products / inventory
+  - name: suppliers
+    description: Supplier management
+  - name: customers
+    description: Customer management
+  - name: purchases
+    description: Purchase management
+  - name: purchaseReturns
+    description: Purchase return management
+  - name: sales
+    description: Sales management
+  - name: salesReturns
+    description: Sales return management
+  - name: stockMovements
+    description: Stock movement tracking
+  - name: dashboard
+    description: Dashboard analytics
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +46,858 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # Categories
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /categories/{id}:
+    get:
+      operationId: getCategory
+      tags: [categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCategory
+      tags: [categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Brands
+  /brands:
+    get:
+      operationId: listBrands
+      tags: [brands]
+      summary: List all brands
+      responses:
+        "200":
+          description: List of brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Brand"
+    post:
+      operationId: createBrand
+      tags: [brands]
+      summary: Create a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBrandBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brand"
+
+  /brands/{id}:
+    patch:
+      operationId: updateBrand
+      tags: [brands]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBrandBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Brand"
+    delete:
+      operationId: deleteBrand
+      tags: [brands]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Products
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: brandId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: activeOnly
+          in: query
+          schema:
+            type: ["boolean", "null"]
+      responses:
+        "200":
+          description: List of products with current stock
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductWithStock"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductWithStock"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateProduct
+      tags: [products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Suppliers
+  /suppliers:
+    get:
+      operationId: listSuppliers
+      tags: [suppliers]
+      summary: List all suppliers
+      responses:
+        "200":
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+    post:
+      operationId: createSupplier
+      tags: [suppliers]
+      summary: Create a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+
+  /suppliers/{id}:
+    get:
+      operationId: getSupplier
+      tags: [suppliers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+    patch:
+      operationId: updateSupplier
+      tags: [suppliers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+    delete:
+      operationId: deleteSupplier
+      tags: [suppliers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Customers
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      tags: [customers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+    patch:
+      operationId: updateCustomer
+      tags: [customers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+    delete:
+      operationId: deleteCustomer
+      tags: [customers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Purchases
+  /purchases:
+    get:
+      operationId: listPurchases
+      tags: [purchases]
+      summary: List all purchases
+      parameters:
+        - name: supplierId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of purchases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PurchaseWithDetails"
+    post:
+      operationId: createPurchase
+      tags: [purchases]
+      summary: Create a purchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePurchaseBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseWithDetails"
+
+  /purchases/{id}:
+    get:
+      operationId: getPurchase
+      tags: [purchases]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Purchase with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseWithDetails"
+        "404":
+          description: Not found
+    delete:
+      operationId: deletePurchase
+      tags: [purchases]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Purchase Returns
+  /purchase-returns:
+    get:
+      operationId: listPurchaseReturns
+      tags: [purchaseReturns]
+      summary: List all purchase returns
+      parameters:
+        - name: supplierId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of purchase returns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PurchaseReturnWithDetails"
+    post:
+      operationId: createPurchaseReturn
+      tags: [purchaseReturns]
+      summary: Create a purchase return
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePurchaseReturnBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseReturnWithDetails"
+
+  /purchase-returns/{id}:
+    get:
+      operationId: getPurchaseReturn
+      tags: [purchaseReturns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Purchase return with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseReturnWithDetails"
+        "404":
+          description: Not found
+
+  # Sales
+  /sales:
+    get:
+      operationId: listSales
+      tags: [sales]
+      summary: List all sales
+      parameters:
+        - name: customerId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleWithDetails"
+    post:
+      operationId: createSale
+      tags: [sales]
+      summary: Create a sale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSaleBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SaleWithDetails"
+
+  /sales/{id}:
+    get:
+      operationId: getSale
+      tags: [sales]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sale with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SaleWithDetails"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteSale
+      tags: [sales]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Sales Returns
+  /sales-returns:
+    get:
+      operationId: listSalesReturns
+      tags: [salesReturns]
+      summary: List all sales returns
+      parameters:
+        - name: customerId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of sales returns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SalesReturnWithDetails"
+    post:
+      operationId: createSalesReturn
+      tags: [salesReturns]
+      summary: Create a sales return
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSalesReturnBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalesReturnWithDetails"
+
+  /sales-returns/{id}:
+    get:
+      operationId: getSalesReturn
+      tags: [salesReturns]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sales return with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SalesReturnWithDetails"
+        "404":
+          description: Not found
+
+  # Stock movements
+  /stock-movements:
+    get:
+      operationId: listStockMovements
+      tags: [stockMovements]
+      summary: List stock movements
+      parameters:
+        - name: productId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: type
+          in: query
+          schema:
+            type: ["string", "null"]
+            enum: [in, out, null]
+      responses:
+        "200":
+          description: List of stock movements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StockMovement"
+
+  # Dashboard
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard summary stats
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/recent-sales:
+    get:
+      operationId: getRecentSales
+      tags: [dashboard]
+      summary: Recent sales for dashboard
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Recent sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleWithDetails"
+
+  /dashboard/low-stock:
+    get:
+      operationId: getLowStockProducts
+      tags: [dashboard]
+      summary: Products with low or zero stock
+      parameters:
+        - name: threshold
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Low stock products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductWithStock"
+
+  /dashboard/sales-trend:
+    get:
+      operationId: getSalesTrend
+      tags: [dashboard]
+      summary: Daily sales for the past N days
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Sales trend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SalesTrendPoint"
+
+  /dashboard/top-products:
+    get:
+      operationId: getTopProducts
+      tags: [dashboard]
+      summary: Top selling products
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Top products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopProduct"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +908,799 @@ components:
       required:
         - status
 
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - createdAt
+
+    CreateCategoryBody:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    Brand:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - createdAt
+
+    CreateBrandBody:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        productCode:
+          type: string
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        categoryId:
+          type: ["integer", "null"]
+        brandId:
+          type: ["integer", "null"]
+        barcode:
+          type: ["string", "null"]
+        salesPrice:
+          type: number
+        cost:
+          type: number
+        discount:
+          type: number
+        discountType:
+          type: string
+          enum: [fixed, percentage]
+        hasExpiry:
+          type: boolean
+        valuationMethod:
+          type: string
+          enum: [fifo, lifo, average]
+        isActive:
+          type: boolean
+        categoryName:
+          type: ["string", "null"]
+        brandName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - productCode
+        - name
+        - salesPrice
+        - cost
+        - discount
+        - discountType
+        - hasExpiry
+        - valuationMethod
+        - isActive
+        - createdAt
+
+    ProductWithStock:
+      allOf:
+        - $ref: "#/components/schemas/Product"
+        - type: object
+          properties:
+            currentStock:
+              type: number
+          required:
+            - currentStock
+
+    CreateProductBody:
+      type: object
+      properties:
+        productCode:
+          type: ["string", "null"]
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        categoryId:
+          type: ["integer", "null"]
+        brandId:
+          type: ["integer", "null"]
+        barcode:
+          type: ["string", "null"]
+        salesPrice:
+          type: number
+        cost:
+          type: number
+        discount:
+          type: number
+        discountType:
+          type: string
+          enum: [fixed, percentage]
+        hasExpiry:
+          type: boolean
+        valuationMethod:
+          type: string
+          enum: [fifo, lifo, average]
+        isActive:
+          type: boolean
+      required:
+        - name
+        - salesPrice
+        - cost
+
+    UpdateProductBody:
+      type: object
+      properties:
+        productCode:
+          type: ["string", "null"]
+        name:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        categoryId:
+          type: ["integer", "null"]
+        brandId:
+          type: ["integer", "null"]
+        barcode:
+          type: ["string", "null"]
+        salesPrice:
+          type: ["number", "null"]
+        cost:
+          type: ["number", "null"]
+        discount:
+          type: ["number", "null"]
+        discountType:
+          type: ["string", "null"]
+          enum: [fixed, percentage, null]
+        hasExpiry:
+          type: ["boolean", "null"]
+        valuationMethod:
+          type: ["string", "null"]
+          enum: [fifo, lifo, average, null]
+        isActive:
+          type: ["boolean", "null"]
+
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        contactPerson:
+          type: ["string", "null"]
+        contactNo:
+          type: ["string", "null"]
+        creditLimit:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - creditLimit
+        - createdAt
+
+    CreateSupplierBody:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        contactPerson:
+          type: ["string", "null"]
+        contactNo:
+          type: ["string", "null"]
+        creditLimit:
+          type: number
+      required:
+        - name
+        - creditLimit
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        contactPerson:
+          type: ["string", "null"]
+        contactNo:
+          type: ["string", "null"]
+        creditLimit:
+          type: number
+        loyaltyPoints:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - creditLimit
+        - loyaltyPoints
+        - createdAt
+
+    CreateCustomerBody:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        contactPerson:
+          type: ["string", "null"]
+        contactNo:
+          type: ["string", "null"]
+        creditLimit:
+          type: number
+        loyaltyPoints:
+          type: number
+      required:
+        - name
+        - creditLimit
+
+    PurchaseDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        purchaseId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        cost:
+          type: number
+        price:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - id
+        - purchaseId
+        - productId
+        - productName
+        - productCode
+        - cost
+        - price
+        - discount
+        - qty
+
+    Purchase:
+      type: object
+      properties:
+        id:
+          type: integer
+        purchaseDate:
+          type: string
+        supplierId:
+          type: ["integer", "null"]
+        supplierName:
+          type: ["string", "null"]
+        supplierBillNo:
+          type: ["string", "null"]
+        totalAmount:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - purchaseDate
+        - totalAmount
+        - createdAt
+
+    PurchaseWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/Purchase"
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/PurchaseDetail"
+          required:
+            - details
+
+    CreatePurchaseDetailItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        cost:
+          type: number
+        price:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - productId
+        - cost
+        - price
+        - qty
+
+    CreatePurchaseBody:
+      type: object
+      properties:
+        purchaseDate:
+          type: string
+        supplierId:
+          type: ["integer", "null"]
+        supplierBillNo:
+          type: ["string", "null"]
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePurchaseDetailItem"
+      required:
+        - purchaseDate
+        - details
+
+    PurchaseReturnDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        purchaseReturnId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        cost:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - id
+        - purchaseReturnId
+        - productId
+        - productName
+        - productCode
+        - cost
+        - discount
+        - qty
+
+    PurchaseReturn:
+      type: object
+      properties:
+        id:
+          type: integer
+        returnDate:
+          type: string
+        supplierId:
+          type: ["integer", "null"]
+        supplierName:
+          type: ["string", "null"]
+        supplierBillNo:
+          type: ["string", "null"]
+        totalAmount:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - returnDate
+        - totalAmount
+        - createdAt
+
+    PurchaseReturnWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/PurchaseReturn"
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/PurchaseReturnDetail"
+          required:
+            - details
+
+    CreatePurchaseReturnDetailItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        cost:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - productId
+        - cost
+        - qty
+
+    CreatePurchaseReturnBody:
+      type: object
+      properties:
+        returnDate:
+          type: string
+        supplierId:
+          type: ["integer", "null"]
+        supplierBillNo:
+          type: ["string", "null"]
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePurchaseReturnDetailItem"
+      required:
+        - returnDate
+        - details
+
+    SaleDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        saleId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        salesPrice:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - id
+        - saleId
+        - productId
+        - productName
+        - productCode
+        - salesPrice
+        - discount
+        - qty
+
+    PaymentTransaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        saleId:
+          type: integer
+        paymentType:
+          type: string
+          enum: [cash, cheque, card, voucher, loyalty]
+        amount:
+          type: number
+      required:
+        - id
+        - saleId
+        - paymentType
+        - amount
+
+    Sale:
+      type: object
+      properties:
+        id:
+          type: integer
+        saleDate:
+          type: string
+        customerId:
+          type: ["integer", "null"]
+        customerName:
+          type: ["string", "null"]
+        billNo:
+          type: string
+        totalAmount:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - saleDate
+        - billNo
+        - totalAmount
+        - createdAt
+
+    SaleWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/Sale"
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/SaleDetail"
+            payments:
+              type: array
+              items:
+                $ref: "#/components/schemas/PaymentTransaction"
+          required:
+            - details
+            - payments
+
+    CreateSaleDetailItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        salesPrice:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - productId
+        - salesPrice
+        - qty
+
+    CreatePaymentItem:
+      type: object
+      properties:
+        paymentType:
+          type: string
+          enum: [cash, cheque, card, voucher, loyalty]
+        amount:
+          type: number
+      required:
+        - paymentType
+        - amount
+
+    CreateSaleBody:
+      type: object
+      properties:
+        saleDate:
+          type: string
+        customerId:
+          type: ["integer", "null"]
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateSaleDetailItem"
+        payments:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePaymentItem"
+      required:
+        - saleDate
+        - details
+        - payments
+
+    SalesReturnDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        salesReturnId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        salesPrice:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - id
+        - salesReturnId
+        - productId
+        - productName
+        - productCode
+        - salesPrice
+        - discount
+        - qty
+
+    SalesReturn:
+      type: object
+      properties:
+        id:
+          type: integer
+        returnDate:
+          type: string
+        customerId:
+          type: ["integer", "null"]
+        customerName:
+          type: ["string", "null"]
+        originalBillNo:
+          type: ["string", "null"]
+        totalAmount:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - returnDate
+        - totalAmount
+        - createdAt
+
+    SalesReturnWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/SalesReturn"
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/SalesReturnDetail"
+          required:
+            - details
+
+    CreateSalesReturnDetailItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        salesPrice:
+          type: number
+        discount:
+          type: number
+        qty:
+          type: number
+      required:
+        - productId
+        - salesPrice
+        - qty
+
+    CreateSalesReturnBody:
+      type: object
+      properties:
+        returnDate:
+          type: string
+        customerId:
+          type: ["integer", "null"]
+        originalBillNo:
+          type: ["string", "null"]
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateSalesReturnDetailItem"
+      required:
+        - returnDate
+        - details
+
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+        movementDate:
+          type: string
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        stockIn:
+          type: number
+        stockOut:
+          type: number
+        movementType:
+          type: string
+          enum: [purchase, purchase_return, sale, sales_return]
+        referenceId:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - id
+        - movementDate
+        - productId
+        - productName
+        - productCode
+        - stockIn
+        - stockOut
+        - movementType
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalSalesToday:
+          type: number
+        totalSalesThisMonth:
+          type: number
+        totalPurchasesThisMonth:
+          type: number
+        totalProductsCount:
+          type: integer
+        lowStockCount:
+          type: integer
+        totalCustomers:
+          type: integer
+        totalSuppliers:
+          type: integer
+        netProfitThisMonth:
+          type: number
+      required:
+        - totalSalesToday
+        - totalSalesThisMonth
+        - totalPurchasesThisMonth
+        - totalProductsCount
+        - lowStockCount
+        - totalCustomers
+        - totalSuppliers
+        - netProfitThisMonth
+
+    SalesTrendPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        totalSales:
+          type: number
+        orderCount:
+          type: integer
+      required:
+        - date
+        - totalSales
+        - orderCount
+
+    TopProduct:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        productCode:
+          type: string
+        totalQtySold:
+          type: number
+        totalRevenue:
+          type: number
+      required:
+        - productId
+        - productName
+        - productCode
+        - totalQtySold
+        - totalRevenue
