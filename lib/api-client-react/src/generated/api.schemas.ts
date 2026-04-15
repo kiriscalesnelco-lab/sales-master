@@ -487,6 +487,99 @@ export interface TopProduct {
   totalRevenue: number;
 }
 
+export interface RequestOtpBody {
+  mobile: string;
+}
+
+export interface RequestOtpResponse {
+  message: string;
+  otp: string;
+  isNew: boolean;
+}
+
+export interface VerifyOtpBody {
+  mobile: string;
+  otp: string;
+}
+
+export interface VerifyOtpResponse {
+  mobile: string;
+  /** @nullable */
+  customerName?: string | null;
+  isNew: boolean;
+  isVerified: boolean;
+}
+
+export interface RegisterCustomerPortalBody {
+  mobile: string;
+  name: string;
+}
+
+export interface CustomerOrderDetailItem {
+  productId: number;
+  productName: string;
+  price: number;
+  qty: number;
+}
+
+export interface SubmitCustomerOrderBody {
+  mobile: string;
+  customerName: string;
+  details: CustomerOrderDetailItem[];
+}
+
+export interface CustomerOrderDetail {
+  id: number;
+  orderId: number;
+  productId: number;
+  productName: string;
+  price: number;
+  qty: number;
+}
+
+export type CustomerOrderStatus =
+  (typeof CustomerOrderStatus)[keyof typeof CustomerOrderStatus];
+
+export const CustomerOrderStatus = {
+  pending: "pending",
+  confirmed: "confirmed",
+  billed: "billed",
+} as const;
+
+export interface CustomerOrder {
+  id: number;
+  mobile: string;
+  customerName: string;
+  status: CustomerOrderStatus;
+  totalAmount: number;
+  /** @nullable */
+  billNo?: string | null;
+  orderDate: string;
+  createdAt: string;
+}
+
+export type CustomerOrderWithDetails = CustomerOrder & {
+  details: CustomerOrderDetail[];
+};
+
+export interface CustomerBillDetailItem {
+  productName: string;
+  price: number;
+  qty: number;
+  lineTotal: number;
+}
+
+export interface CustomerBill {
+  billNo: string;
+  mobile: string;
+  customerName: string;
+  totalAmount: number;
+  orderDate: string;
+  details: CustomerBillDetailItem[];
+  qrData: string;
+  createdAt: string;
+}
+
 export type ListProductsParams = {
   /**
    * @nullable
@@ -627,4 +720,11 @@ export type GetTopProductsParams = {
    * @nullable
    */
   limit?: number | null;
+};
+
+export type ListCustomerOrdersParams = {
+  /**
+   * @nullable
+   */
+  status?: string | null;
 };

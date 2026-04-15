@@ -32,6 +32,10 @@ tags:
     description: Stock movement tracking
   - name: dashboard
     description: Dashboard analytics
+  - name: customerPortal
+    description: Customer-facing ordering portal (OTP login + orders)
+  - name: customerOrders
+    description: Admin management of customer orders
 
 paths:
   /healthz:
@@ -898,6 +902,188 @@ paths:
                 items:
                   $ref: "#/components/schemas/TopProduct"
 
+  # Customer Portal
+  /customer/request-otp:
+    post:
+      operationId: requestOtp
+      tags: [customerPortal]
+      summary: Request OTP for customer login/register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestOtpBody"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestOtpResponse"
+
+  /customer/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [customerPortal]
+      summary: Verify OTP and return customer info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpBody"
+      responses:
+        "200":
+          description: Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyOtpResponse"
+        "400":
+          description: Invalid or expired OTP
+
+  /customer/register:
+    post:
+      operationId: registerCustomerPortal
+      tags: [customerPortal]
+      summary: Register a new customer (after OTP verification)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterCustomerPortalBody"
+      responses:
+        "200":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyOtpResponse"
+
+  /customer/orders:
+    post:
+      operationId: submitCustomerOrder
+      tags: [customerPortal]
+      summary: Submit an order from the customer portal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitCustomerOrderBody"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerOrder"
+
+  /customer/orders/{mobile}:
+    get:
+      operationId: getCustomerOrdersByMobile
+      tags: [customerPortal]
+      summary: Get orders for a customer by mobile
+      parameters:
+        - name: mobile
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomerOrder"
+
+  # Admin customer orders
+  /orders:
+    get:
+      operationId: listCustomerOrders
+      tags: [customerOrders]
+      summary: List all customer orders (admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Customer orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomerOrderWithDetails"
+
+  /orders/{id}:
+    get:
+      operationId: getCustomerOrder
+      tags: [customerOrders]
+      summary: Get a customer order with details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerOrderWithDetails"
+        "404":
+          description: Not found
+
+  /orders/{id}/confirm:
+    patch:
+      operationId: confirmCustomerOrder
+      tags: [customerOrders]
+      summary: Confirm order and generate bill
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Confirmed order with bill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerOrderWithDetails"
+
+  /orders/{id}/bill:
+    get:
+      operationId: getCustomerOrderBill
+      tags: [customerOrders]
+      summary: Get bill for a confirmed order (with QR data)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerBill"
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
@@ -1704,3 +1890,208 @@ components:
         - productCode
         - totalQtySold
         - totalRevenue
+
+    RequestOtpBody:
+      type: object
+      properties:
+        mobile:
+          type: string
+      required:
+        - mobile
+
+    RequestOtpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        otp:
+          type: string
+        isNew:
+          type: boolean
+      required:
+        - message
+        - otp
+        - isNew
+
+    VerifyOtpBody:
+      type: object
+      properties:
+        mobile:
+          type: string
+        otp:
+          type: string
+      required:
+        - mobile
+        - otp
+
+    VerifyOtpResponse:
+      type: object
+      properties:
+        mobile:
+          type: string
+        customerName:
+          type: ["string", "null"]
+        isNew:
+          type: boolean
+        isVerified:
+          type: boolean
+      required:
+        - mobile
+        - isVerified
+        - isNew
+
+    RegisterCustomerPortalBody:
+      type: object
+      properties:
+        mobile:
+          type: string
+        name:
+          type: string
+      required:
+        - mobile
+        - name
+
+    CustomerOrderDetailItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        price:
+          type: number
+        qty:
+          type: number
+      required:
+        - productId
+        - productName
+        - price
+        - qty
+
+    SubmitCustomerOrderBody:
+      type: object
+      properties:
+        mobile:
+          type: string
+        customerName:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerOrderDetailItem"
+      required:
+        - mobile
+        - customerName
+        - details
+
+    CustomerOrderDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        orderId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        price:
+          type: number
+        qty:
+          type: number
+      required:
+        - id
+        - orderId
+        - productId
+        - productName
+        - price
+        - qty
+
+    CustomerOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        mobile:
+          type: string
+        customerName:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, billed]
+        totalAmount:
+          type: number
+        billNo:
+          type: ["string", "null"]
+        orderDate:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - mobile
+        - customerName
+        - status
+        - totalAmount
+        - orderDate
+        - createdAt
+
+    CustomerOrderWithDetails:
+      allOf:
+        - $ref: "#/components/schemas/CustomerOrder"
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/CustomerOrderDetail"
+          required:
+            - details
+
+    CustomerBillDetailItem:
+      type: object
+      properties:
+        productName:
+          type: string
+        price:
+          type: number
+        qty:
+          type: number
+        lineTotal:
+          type: number
+      required:
+        - productName
+        - price
+        - qty
+        - lineTotal
+
+    CustomerBill:
+      type: object
+      properties:
+        billNo:
+          type: string
+        mobile:
+          type: string
+        customerName:
+          type: string
+        totalAmount:
+          type: number
+        orderDate:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerBillDetailItem"
+        qrData:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - billNo
+        - mobile
+        - customerName
+        - totalAmount
+        - orderDate
+        - details
+        - qrData
+        - createdAt

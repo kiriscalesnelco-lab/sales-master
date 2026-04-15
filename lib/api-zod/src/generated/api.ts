@@ -929,3 +929,210 @@ export const GetTopProductsResponseItem = zod.object({
   totalRevenue: zod.number(),
 });
 export const GetTopProductsResponse = zod.array(GetTopProductsResponseItem);
+
+/**
+ * @summary Request OTP for customer login/register
+ */
+export const RequestOtpBody = zod.object({
+  mobile: zod.string(),
+});
+
+export const RequestOtpResponse = zod.object({
+  message: zod.string(),
+  otp: zod.string(),
+  isNew: zod.boolean(),
+});
+
+/**
+ * @summary Verify OTP and return customer info
+ */
+export const VerifyOtpBody = zod.object({
+  mobile: zod.string(),
+  otp: zod.string(),
+});
+
+export const VerifyOtpResponse = zod.object({
+  mobile: zod.string(),
+  customerName: zod.string().nullish(),
+  isNew: zod.boolean(),
+  isVerified: zod.boolean(),
+});
+
+/**
+ * @summary Register a new customer (after OTP verification)
+ */
+export const RegisterCustomerPortalBody = zod.object({
+  mobile: zod.string(),
+  name: zod.string(),
+});
+
+export const RegisterCustomerPortalResponse = zod.object({
+  mobile: zod.string(),
+  customerName: zod.string().nullish(),
+  isNew: zod.boolean(),
+  isVerified: zod.boolean(),
+});
+
+/**
+ * @summary Submit an order from the customer portal
+ */
+export const SubmitCustomerOrderBody = zod.object({
+  mobile: zod.string(),
+  customerName: zod.string(),
+  details: zod.array(
+    zod.object({
+      productId: zod.number(),
+      productName: zod.string(),
+      price: zod.number(),
+      qty: zod.number(),
+    }),
+  ),
+});
+
+/**
+ * @summary Get orders for a customer by mobile
+ */
+export const GetCustomerOrdersByMobileParams = zod.object({
+  mobile: zod.coerce.string(),
+});
+
+export const GetCustomerOrdersByMobileResponseItem = zod.object({
+  id: zod.number(),
+  mobile: zod.string(),
+  customerName: zod.string(),
+  status: zod.enum(["pending", "confirmed", "billed"]),
+  totalAmount: zod.number(),
+  billNo: zod.string().nullish(),
+  orderDate: zod.string(),
+  createdAt: zod.string(),
+});
+export const GetCustomerOrdersByMobileResponse = zod.array(
+  GetCustomerOrdersByMobileResponseItem,
+);
+
+/**
+ * @summary List all customer orders (admin)
+ */
+export const ListCustomerOrdersQueryParams = zod.object({
+  status: zod.coerce.string().nullish(),
+});
+
+export const ListCustomerOrdersResponseItem = zod
+  .object({
+    id: zod.number(),
+    mobile: zod.string(),
+    customerName: zod.string(),
+    status: zod.enum(["pending", "confirmed", "billed"]),
+    totalAmount: zod.number(),
+    billNo: zod.string().nullish(),
+    orderDate: zod.string(),
+    createdAt: zod.string(),
+  })
+  .and(
+    zod.object({
+      details: zod.array(
+        zod.object({
+          id: zod.number(),
+          orderId: zod.number(),
+          productId: zod.number(),
+          productName: zod.string(),
+          price: zod.number(),
+          qty: zod.number(),
+        }),
+      ),
+    }),
+  );
+export const ListCustomerOrdersResponse = zod.array(
+  ListCustomerOrdersResponseItem,
+);
+
+/**
+ * @summary Get a customer order with details
+ */
+export const GetCustomerOrderParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetCustomerOrderResponse = zod
+  .object({
+    id: zod.number(),
+    mobile: zod.string(),
+    customerName: zod.string(),
+    status: zod.enum(["pending", "confirmed", "billed"]),
+    totalAmount: zod.number(),
+    billNo: zod.string().nullish(),
+    orderDate: zod.string(),
+    createdAt: zod.string(),
+  })
+  .and(
+    zod.object({
+      details: zod.array(
+        zod.object({
+          id: zod.number(),
+          orderId: zod.number(),
+          productId: zod.number(),
+          productName: zod.string(),
+          price: zod.number(),
+          qty: zod.number(),
+        }),
+      ),
+    }),
+  );
+
+/**
+ * @summary Confirm order and generate bill
+ */
+export const ConfirmCustomerOrderParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ConfirmCustomerOrderResponse = zod
+  .object({
+    id: zod.number(),
+    mobile: zod.string(),
+    customerName: zod.string(),
+    status: zod.enum(["pending", "confirmed", "billed"]),
+    totalAmount: zod.number(),
+    billNo: zod.string().nullish(),
+    orderDate: zod.string(),
+    createdAt: zod.string(),
+  })
+  .and(
+    zod.object({
+      details: zod.array(
+        zod.object({
+          id: zod.number(),
+          orderId: zod.number(),
+          productId: zod.number(),
+          productName: zod.string(),
+          price: zod.number(),
+          qty: zod.number(),
+        }),
+      ),
+    }),
+  );
+
+/**
+ * @summary Get bill for a confirmed order (with QR data)
+ */
+export const GetCustomerOrderBillParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetCustomerOrderBillResponse = zod.object({
+  billNo: zod.string(),
+  mobile: zod.string(),
+  customerName: zod.string(),
+  totalAmount: zod.number(),
+  orderDate: zod.string(),
+  details: zod.array(
+    zod.object({
+      productName: zod.string(),
+      price: zod.number(),
+      qty: zod.number(),
+      lineTotal: zod.number(),
+    }),
+  ),
+  qrData: zod.string(),
+  createdAt: zod.string(),
+});

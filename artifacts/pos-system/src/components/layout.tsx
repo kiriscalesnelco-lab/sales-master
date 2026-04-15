@@ -10,7 +10,9 @@ import {
   ArrowLeftRight, 
   TrendingUp, 
   BarChart, 
-  Store
+  Store,
+  ClipboardList,
+  Smartphone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +30,8 @@ const navigation = [
   { name: "Purchase Returns", href: "/purchase-returns", icon: ArrowLeftRight },
   { name: "Stock Movement", href: "/stock", icon: Store },
   { name: "Reports", href: "/reports", icon: BarChart },
+  { name: "Customer Orders", href: "/orders", icon: ClipboardList },
+  { name: "Customer Portal", href: "/customer", icon: Smartphone },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

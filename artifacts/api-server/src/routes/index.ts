@@ -11,6 +11,8 @@ import salesRouter from "./sales";
 import salesReturnsRouter from "./salesReturns";
 import stockMovementsRouter from "./stockMovements";
 import dashboardRouter from "./dashboard";
+import customerPortalRouter from "./customerPortal";
+import customerOrdersRouter from "./customerOrders";
 
 const router: IRouter = Router();
 
@@ -26,5 +28,7 @@ router.use(salesRouter);
 router.use(salesReturnsRouter);
 router.use(stockMovementsRouter);
 router.use(dashboardRouter);
+router.use(customerPortalRouter);
+router.use(customerOrdersRouter);
 
 export default router;

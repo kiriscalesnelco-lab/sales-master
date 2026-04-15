@@ -8,6 +8,10 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Pos from "@/pages/pos";
 import Products from "@/pages/products";
+import CustomerLogin from "@/pages/customer-login";
+import CustomerShop from "@/pages/customer-shop";
+import OrdersPage from "@/pages/orders";
+import BillView from "@/pages/bill-view";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,16 +22,28 @@ const queryClient = new QueryClient({
   },
 });
 
-function Router() {
+function AdminRouter() {
   return (
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/pos" component={Pos} />
         <Route path="/products" component={Products} />
+        <Route path="/orders" component={OrdersPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
+  );
+}
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/customer" component={CustomerLogin} />
+      <Route path="/customer/shop" component={CustomerShop} />
+      <Route path="/bill/:id" component={BillView} />
+      <Route>{() => <AdminRouter />}</Route>
+    </Switch>
   );
 }
 

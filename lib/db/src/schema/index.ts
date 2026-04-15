@@ -8,3 +8,5 @@ export * from "./purchaseReturns";
 export * from "./sales";
 export * from "./salesReturns";
 export * from "./stockMovements";
+export * from "./customerOtps";
+export * from "./customerOrders";

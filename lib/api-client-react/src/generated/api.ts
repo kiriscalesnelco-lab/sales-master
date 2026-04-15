@@ -29,12 +29,16 @@ import type {
   CreateSalesReturnBody,
   CreateSupplierBody,
   Customer,
+  CustomerBill,
+  CustomerOrder,
+  CustomerOrderWithDetails,
   DashboardSummary,
   GetLowStockProductsParams,
   GetRecentSalesParams,
   GetSalesTrendParams,
   GetTopProductsParams,
   HealthStatus,
+  ListCustomerOrdersParams,
   ListCustomersParams,
   ListProductsParams,
   ListPurchaseReturnsParams,
@@ -46,13 +50,19 @@ import type {
   ProductWithStock,
   PurchaseReturnWithDetails,
   PurchaseWithDetails,
+  RegisterCustomerPortalBody,
+  RequestOtpBody,
+  RequestOtpResponse,
   SaleWithDetails,
   SalesReturnWithDetails,
   SalesTrendPoint,
   StockMovement,
+  SubmitCustomerOrderBody,
   Supplier,
   TopProduct,
   UpdateProductBody,
+  VerifyOtpBody,
+  VerifyOtpResponse,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -3840,6 +3850,802 @@ export function useGetTopProducts<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetTopProductsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Request OTP for customer login/register
+ */
+export const getRequestOtpUrl = () => {
+  return `/api/customer/request-otp`;
+};
+
+export const requestOtp = async (
+  requestOtpBody: RequestOtpBody,
+  options?: RequestInit,
+): Promise<RequestOtpResponse> => {
+  return customFetch<RequestOtpResponse>(getRequestOtpUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(requestOtpBody),
+  });
+};
+
+export const getRequestOtpMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestOtp>>,
+    TError,
+    { data: BodyType<RequestOtpBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof requestOtp>>,
+  TError,
+  { data: BodyType<RequestOtpBody> },
+  TContext
+> => {
+  const mutationKey = ["requestOtp"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof requestOtp>>,
+    { data: BodyType<RequestOtpBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return requestOtp(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RequestOtpMutationResult = NonNullable<
+  Awaited<ReturnType<typeof requestOtp>>
+>;
+export type RequestOtpMutationBody = BodyType<RequestOtpBody>;
+export type RequestOtpMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Request OTP for customer login/register
+ */
+export const useRequestOtp = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestOtp>>,
+    TError,
+    { data: BodyType<RequestOtpBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof requestOtp>>,
+  TError,
+  { data: BodyType<RequestOtpBody> },
+  TContext
+> => {
+  return useMutation(getRequestOtpMutationOptions(options));
+};
+
+/**
+ * @summary Verify OTP and return customer info
+ */
+export const getVerifyOtpUrl = () => {
+  return `/api/customer/verify-otp`;
+};
+
+export const verifyOtp = async (
+  verifyOtpBody: VerifyOtpBody,
+  options?: RequestInit,
+): Promise<VerifyOtpResponse> => {
+  return customFetch<VerifyOtpResponse>(getVerifyOtpUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(verifyOtpBody),
+  });
+};
+
+export const getVerifyOtpMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyOtp>>,
+    TError,
+    { data: BodyType<VerifyOtpBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof verifyOtp>>,
+  TError,
+  { data: BodyType<VerifyOtpBody> },
+  TContext
+> => {
+  const mutationKey = ["verifyOtp"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof verifyOtp>>,
+    { data: BodyType<VerifyOtpBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return verifyOtp(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type VerifyOtpMutationResult = NonNullable<
+  Awaited<ReturnType<typeof verifyOtp>>
+>;
+export type VerifyOtpMutationBody = BodyType<VerifyOtpBody>;
+export type VerifyOtpMutationError = ErrorType<void>;
+
+/**
+ * @summary Verify OTP and return customer info
+ */
+export const useVerifyOtp = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyOtp>>,
+    TError,
+    { data: BodyType<VerifyOtpBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof verifyOtp>>,
+  TError,
+  { data: BodyType<VerifyOtpBody> },
+  TContext
+> => {
+  return useMutation(getVerifyOtpMutationOptions(options));
+};
+
+/**
+ * @summary Register a new customer (after OTP verification)
+ */
+export const getRegisterCustomerPortalUrl = () => {
+  return `/api/customer/register`;
+};
+
+export const registerCustomerPortal = async (
+  registerCustomerPortalBody: RegisterCustomerPortalBody,
+  options?: RequestInit,
+): Promise<VerifyOtpResponse> => {
+  return customFetch<VerifyOtpResponse>(getRegisterCustomerPortalUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(registerCustomerPortalBody),
+  });
+};
+
+export const getRegisterCustomerPortalMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerCustomerPortal>>,
+    TError,
+    { data: BodyType<RegisterCustomerPortalBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof registerCustomerPortal>>,
+  TError,
+  { data: BodyType<RegisterCustomerPortalBody> },
+  TContext
+> => {
+  const mutationKey = ["registerCustomerPortal"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof registerCustomerPortal>>,
+    { data: BodyType<RegisterCustomerPortalBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return registerCustomerPortal(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RegisterCustomerPortalMutationResult = NonNullable<
+  Awaited<ReturnType<typeof registerCustomerPortal>>
+>;
+export type RegisterCustomerPortalMutationBody =
+  BodyType<RegisterCustomerPortalBody>;
+export type RegisterCustomerPortalMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Register a new customer (after OTP verification)
+ */
+export const useRegisterCustomerPortal = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerCustomerPortal>>,
+    TError,
+    { data: BodyType<RegisterCustomerPortalBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof registerCustomerPortal>>,
+  TError,
+  { data: BodyType<RegisterCustomerPortalBody> },
+  TContext
+> => {
+  return useMutation(getRegisterCustomerPortalMutationOptions(options));
+};
+
+/**
+ * @summary Submit an order from the customer portal
+ */
+export const getSubmitCustomerOrderUrl = () => {
+  return `/api/customer/orders`;
+};
+
+export const submitCustomerOrder = async (
+  submitCustomerOrderBody: SubmitCustomerOrderBody,
+  options?: RequestInit,
+): Promise<CustomerOrder> => {
+  return customFetch<CustomerOrder>(getSubmitCustomerOrderUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(submitCustomerOrderBody),
+  });
+};
+
+export const getSubmitCustomerOrderMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitCustomerOrder>>,
+    TError,
+    { data: BodyType<SubmitCustomerOrderBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof submitCustomerOrder>>,
+  TError,
+  { data: BodyType<SubmitCustomerOrderBody> },
+  TContext
+> => {
+  const mutationKey = ["submitCustomerOrder"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof submitCustomerOrder>>,
+    { data: BodyType<SubmitCustomerOrderBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return submitCustomerOrder(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubmitCustomerOrderMutationResult = NonNullable<
+  Awaited<ReturnType<typeof submitCustomerOrder>>
+>;
+export type SubmitCustomerOrderMutationBody = BodyType<SubmitCustomerOrderBody>;
+export type SubmitCustomerOrderMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Submit an order from the customer portal
+ */
+export const useSubmitCustomerOrder = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitCustomerOrder>>,
+    TError,
+    { data: BodyType<SubmitCustomerOrderBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof submitCustomerOrder>>,
+  TError,
+  { data: BodyType<SubmitCustomerOrderBody> },
+  TContext
+> => {
+  return useMutation(getSubmitCustomerOrderMutationOptions(options));
+};
+
+/**
+ * @summary Get orders for a customer by mobile
+ */
+export const getGetCustomerOrdersByMobileUrl = (mobile: string) => {
+  return `/api/customer/orders/${mobile}`;
+};
+
+export const getCustomerOrdersByMobile = async (
+  mobile: string,
+  options?: RequestInit,
+): Promise<CustomerOrder[]> => {
+  return customFetch<CustomerOrder[]>(getGetCustomerOrdersByMobileUrl(mobile), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetCustomerOrdersByMobileQueryKey = (mobile: string) => {
+  return [`/api/customer/orders/${mobile}`] as const;
+};
+
+export const getGetCustomerOrdersByMobileQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCustomerOrdersByMobile>>,
+  TError = ErrorType<unknown>,
+>(
+  mobile: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrdersByMobile>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetCustomerOrdersByMobileQueryKey(mobile);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCustomerOrdersByMobile>>
+  > = ({ signal }) =>
+    getCustomerOrdersByMobile(mobile, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!mobile,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomerOrdersByMobile>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetCustomerOrdersByMobileQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCustomerOrdersByMobile>>
+>;
+export type GetCustomerOrdersByMobileQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get orders for a customer by mobile
+ */
+
+export function useGetCustomerOrdersByMobile<
+  TData = Awaited<ReturnType<typeof getCustomerOrdersByMobile>>,
+  TError = ErrorType<unknown>,
+>(
+  mobile: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrdersByMobile>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCustomerOrdersByMobileQueryOptions(
+    mobile,
+    options,
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List all customer orders (admin)
+ */
+export const getListCustomerOrdersUrl = (params?: ListCustomerOrdersParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/orders?${stringifiedParams}`
+    : `/api/orders`;
+};
+
+export const listCustomerOrders = async (
+  params?: ListCustomerOrdersParams,
+  options?: RequestInit,
+): Promise<CustomerOrderWithDetails[]> => {
+  return customFetch<CustomerOrderWithDetails[]>(
+    getListCustomerOrdersUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getListCustomerOrdersQueryKey = (
+  params?: ListCustomerOrdersParams,
+) => {
+  return [`/api/orders`, ...(params ? [params] : [])] as const;
+};
+
+export const getListCustomerOrdersQueryOptions = <
+  TData = Awaited<ReturnType<typeof listCustomerOrders>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListCustomerOrdersParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listCustomerOrders>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListCustomerOrdersQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listCustomerOrders>>
+  > = ({ signal }) => listCustomerOrders(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listCustomerOrders>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListCustomerOrdersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listCustomerOrders>>
+>;
+export type ListCustomerOrdersQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all customer orders (admin)
+ */
+
+export function useListCustomerOrders<
+  TData = Awaited<ReturnType<typeof listCustomerOrders>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListCustomerOrdersParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listCustomerOrders>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListCustomerOrdersQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get a customer order with details
+ */
+export const getGetCustomerOrderUrl = (id: number) => {
+  return `/api/orders/${id}`;
+};
+
+export const getCustomerOrder = async (
+  id: number,
+  options?: RequestInit,
+): Promise<CustomerOrderWithDetails> => {
+  return customFetch<CustomerOrderWithDetails>(getGetCustomerOrderUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetCustomerOrderQueryKey = (id: number) => {
+  return [`/api/orders/${id}`] as const;
+};
+
+export const getGetCustomerOrderQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCustomerOrder>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrder>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetCustomerOrderQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCustomerOrder>>
+  > = ({ signal }) => getCustomerOrder(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomerOrder>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetCustomerOrderQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCustomerOrder>>
+>;
+export type GetCustomerOrderQueryError = ErrorType<void>;
+
+/**
+ * @summary Get a customer order with details
+ */
+
+export function useGetCustomerOrder<
+  TData = Awaited<ReturnType<typeof getCustomerOrder>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrder>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCustomerOrderQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Confirm order and generate bill
+ */
+export const getConfirmCustomerOrderUrl = (id: number) => {
+  return `/api/orders/${id}/confirm`;
+};
+
+export const confirmCustomerOrder = async (
+  id: number,
+  options?: RequestInit,
+): Promise<CustomerOrderWithDetails> => {
+  return customFetch<CustomerOrderWithDetails>(getConfirmCustomerOrderUrl(id), {
+    ...options,
+    method: "PATCH",
+  });
+};
+
+export const getConfirmCustomerOrderMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmCustomerOrder>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof confirmCustomerOrder>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["confirmCustomerOrder"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof confirmCustomerOrder>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return confirmCustomerOrder(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ConfirmCustomerOrderMutationResult = NonNullable<
+  Awaited<ReturnType<typeof confirmCustomerOrder>>
+>;
+
+export type ConfirmCustomerOrderMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Confirm order and generate bill
+ */
+export const useConfirmCustomerOrder = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmCustomerOrder>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof confirmCustomerOrder>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getConfirmCustomerOrderMutationOptions(options));
+};
+
+/**
+ * @summary Get bill for a confirmed order (with QR data)
+ */
+export const getGetCustomerOrderBillUrl = (id: number) => {
+  return `/api/orders/${id}/bill`;
+};
+
+export const getCustomerOrderBill = async (
+  id: number,
+  options?: RequestInit,
+): Promise<CustomerBill> => {
+  return customFetch<CustomerBill>(getGetCustomerOrderBillUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetCustomerOrderBillQueryKey = (id: number) => {
+  return [`/api/orders/${id}/bill`] as const;
+};
+
+export const getGetCustomerOrderBillQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCustomerOrderBill>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrderBill>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetCustomerOrderBillQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCustomerOrderBill>>
+  > = ({ signal }) => getCustomerOrderBill(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCustomerOrderBill>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetCustomerOrderBillQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCustomerOrderBill>>
+>;
+export type GetCustomerOrderBillQueryError = ErrorType<void>;
+
+/**
+ * @summary Get bill for a confirmed order (with QR data)
+ */
+
+export function useGetCustomerOrderBill<
+  TData = Awaited<ReturnType<typeof getCustomerOrderBill>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCustomerOrderBill>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCustomerOrderBillQueryOptions(id, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
