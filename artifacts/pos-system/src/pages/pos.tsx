@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Gift } from "lucide-react";
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Gift, ShoppingCart, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@workspace/api-client-react/src/generated/api.schemas";
 
