@@ -80,8 +80,8 @@ export default function BillView() {
                     <TableRow key={i}>
                       <TableCell className="text-sm font-medium py-2">{d.productName}</TableCell>
                       <TableCell className="text-right text-sm py-2">{d.qty}</TableCell>
-                      <TableCell className="text-right text-sm py-2">${Number(d.price).toFixed(2)}</TableCell>
-                      <TableCell className="text-right text-sm font-semibold py-2">${Number(d.lineTotal).toFixed(2)}</TableCell>
+                      <TableCell className="text-right text-sm py-2">₹{Number(d.price).toFixed(2)}</TableCell>
+                      <TableCell className="text-right text-sm font-semibold py-2">₹{Number(d.lineTotal).toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -90,7 +90,7 @@ export default function BillView() {
 
             <div className="border-t pt-3 flex items-center justify-between">
               <span className="font-bold text-lg">Total Amount</span>
-              <span className="font-bold text-2xl text-primary">${Number(bill.totalAmount).toFixed(2)}</span>
+              <span className="font-bold text-2xl text-primary">₹{Number(bill.totalAmount).toFixed(2)}</span>
             </div>
 
             <div className="border rounded-xl p-5 bg-gray-50 flex flex-col items-center">

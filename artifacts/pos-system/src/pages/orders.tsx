@@ -133,7 +133,7 @@ export default function OrdersPage() {
                     <TableCell>{order.mobile}</TableCell>
                     <TableCell>{order.orderDate}</TableCell>
                     <TableCell>{order.details.length} item{order.details.length !== 1 ? "s" : ""}</TableCell>
-                    <TableCell className="text-right font-semibold">${Number(order.totalAmount).toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-semibold">₹{Number(order.totalAmount).toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant={statusColors[order.status] ?? "secondary"} className="capitalize">
                         {order.status}
@@ -213,8 +213,8 @@ export default function OrdersPage() {
                     <TableRow key={i}>
                       <TableCell className="font-medium">{d.productName}</TableCell>
                       <TableCell className="text-right">{d.qty}</TableCell>
-                      <TableCell className="text-right">${Number(d.price).toFixed(2)}</TableCell>
-                      <TableCell className="text-right">${Number(d.lineTotal).toFixed(2)}</TableCell>
+                      <TableCell className="text-right">₹{Number(d.price).toFixed(2)}</TableCell>
+                      <TableCell className="text-right">₹{Number(d.lineTotal).toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -222,7 +222,7 @@ export default function OrdersPage() {
 
               <div className="border-t pt-3 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${Number(bill.totalAmount).toFixed(2)}</span>
+                <span>₹{Number(bill.totalAmount).toFixed(2)}</span>
               </div>
 
               <div className="flex flex-col items-center border rounded-lg p-4 bg-gray-50">

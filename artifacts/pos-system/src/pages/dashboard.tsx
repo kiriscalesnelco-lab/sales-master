@@ -18,7 +18,7 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${summary?.totalSalesToday?.toFixed(2) || "0.00"}</div>
+            <div className="text-2xl font-bold">₹{summary?.totalSalesToday?.toFixed(2) || "0.00"}</div>
           </CardContent>
         </Card>
         <Card>
@@ -27,7 +27,7 @@ export default function Dashboard() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${summary?.totalSalesThisMonth?.toFixed(2) || "0.00"}</div>
+            <div className="text-2xl font-bold">₹{summary?.totalSalesThisMonth?.toFixed(2) || "0.00"}</div>
           </CardContent>
         </Card>
         <Card>
@@ -61,8 +61,8 @@ export default function Dashboard() {
                 <LineChart data={salesTrend || []} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `$${value}`} />
-                  <RechartsTooltip formatter={(value: number) => [`$${value.toFixed(2)}`, "Sales"]} />
+                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `₹${value}`} />
+                  <RechartsTooltip formatter={(value: number) => [`₹${value.toFixed(2)}`, "Sales"]} />
                   <Line type="monotone" dataKey="totalSales" stroke="hsl(var(--primary))" strokeWidth={2} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -79,9 +79,9 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProducts || []} layout="vertical" margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+                  <XAxis type="number" tickFormatter={(value) => `₹${value}`} />
                   <YAxis dataKey="productName" type="category" width={100} tick={{ fontSize: 12 }} />
-                  <RechartsTooltip formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
+                  <RechartsTooltip formatter={(value: number) => [`₹${value.toFixed(2)}`, "Revenue"]} />
                   <Bar dataKey="totalRevenue" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>

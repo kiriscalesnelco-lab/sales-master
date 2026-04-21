@@ -98,7 +98,7 @@ export default function Pos() {
                     <Package className="h-8 w-8 text-muted-foreground/50" />
                   </div>
                   <div className="font-medium text-sm line-clamp-2 min-h-[40px]">{product.name}</div>
-                  <div className="text-primary font-bold mt-1">${product.salesPrice.toFixed(2)}</div>
+                  <div className="text-primary font-bold mt-1">₹{product.salesPrice.toFixed(2)}</div>
                 </CardContent>
               </Card>
             ))}
@@ -124,7 +124,7 @@ export default function Pos() {
                 <div key={item.id} className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="font-medium text-sm">{item.name}</div>
-                    <div className="text-muted-foreground text-xs">${item.salesPrice.toFixed(2)}</div>
+                    <div className="text-muted-foreground text-xs">₹{item.salesPrice.toFixed(2)}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQty(item.id, -1)}>
@@ -135,7 +135,7 @@ export default function Pos() {
                       <Plus className="h-3 w-3" />
                     </Button>
                     <div className="w-16 text-right font-medium text-sm">
-                      ${(item.salesPrice * item.cartQty).toFixed(2)}
+                      ₹{(item.salesPrice * item.cartQty).toFixed(2)}
                     </div>
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10" onClick={() => removeFromCart(item.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -151,15 +151,15 @@ export default function Pos() {
           <div className="space-y-1.5 mb-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>₹{totalAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Tax</span>
-              <span>$0.00</span>
+              <span>₹0.00</span>
             </div>
             <div className="flex justify-between font-bold text-lg pt-2 border-t">
               <span>Total</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>₹{totalAmount.toFixed(2)}</span>
             </div>
           </div>
           
@@ -177,7 +177,7 @@ export default function Pos() {
             disabled={cart.length === 0 || createSale.isPending}
             onClick={handleCheckout}
           >
-            Pay ${totalAmount.toFixed(2)}
+            Pay ₹{totalAmount.toFixed(2)}
           </Button>
         </div>
       </Card>

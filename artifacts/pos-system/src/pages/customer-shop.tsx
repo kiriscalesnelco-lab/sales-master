@@ -168,7 +168,7 @@ export default function CustomerShop() {
                     </div>
                     <CardContent className="p-2">
                       <p className="font-medium text-sm truncate">{p.name}</p>
-                      <p className="text-primary font-bold text-sm">${Number(p.sellPrice).toFixed(2)}</p>
+                      <p className="text-primary font-bold text-sm">₹{Number(p.sellPrice).toFixed(2)}</p>
                       {inCart ? (
                         <div className="flex items-center justify-between mt-1">
                           <Button size="icon" variant="outline" className="h-6 w-6" onClick={() => updateQty(p.id, -1)}>
@@ -226,7 +226,7 @@ export default function CustomerShop() {
                           </Button>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-sm font-semibold">${(item.price * item.qty).toFixed(2)}</span>
+                          <span className="text-sm font-semibold">₹{(item.price * item.qty).toFixed(2)}</span>
                           <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => updateQty(item.productId, -item.qty)}>
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -238,7 +238,7 @@ export default function CustomerShop() {
                 <div className="border-t pt-3 mt-3 space-y-3">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${cartTotal.toFixed(2)}</span>
+                    <span>₹{cartTotal.toFixed(2)}</span>
                   </div>
                   <Button
                     className="w-full"
@@ -281,7 +281,7 @@ export default function CustomerShop() {
                   <CardContent>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Total Amount</span>
-                      <span className="font-bold text-lg">${Number(order.totalAmount).toFixed(2)}</span>
+                      <span className="font-bold text-lg">₹{Number(order.totalAmount).toFixed(2)}</span>
                     </div>
                     {order.billNo && (
                       <div className="mt-2 bg-green-50 border border-green-200 rounded p-2 text-sm text-green-800">

@@ -49,8 +49,8 @@ export default function Products() {
                   <TableRow key={product.id}>
                     <TableCell className="font-mono text-xs">{product.productCode}</TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>${product.salesPrice.toFixed(2)}</TableCell>
-                    <TableCell>${product.cost.toFixed(2)}</TableCell>
+                    <TableCell>₹{product.salesPrice.toFixed(2)}</TableCell>
+                    <TableCell>₹{product.cost.toFixed(2)}</TableCell>
                     <TableCell>{product.currentStock || 0}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
