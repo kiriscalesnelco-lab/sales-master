@@ -18,6 +18,7 @@ import Sales from "@/pages/sales";
 import SalesReturns from "@/pages/sales-returns";
 import Stock from "@/pages/stock";
 import Reports from "@/pages/reports";
+import ScalePage from "@/pages/scale";
 import CustomerLogin from "@/pages/customer-login";
 import CustomerShop from "@/pages/customer-shop";
 import OrdersPage from "@/pages/orders";
@@ -49,6 +50,7 @@ function AdminRouter() {
         <Route path="/sales-returns" component={SalesReturns} />
         <Route path="/stock" component={Stock} />
         <Route path="/reports" component={Reports} />
+        <Route path="/scale" component={ScalePage} />
         <Route path="/orders" component={OrdersPage} />
         <Route component={NotFound} />
       </Switch>

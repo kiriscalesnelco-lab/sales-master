@@ -12,7 +12,8 @@ import {
   BarChart, 
   Store,
   ClipboardList,
-  Smartphone
+  Smartphone,
+  Scale as ScaleIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const navigation = [
   { name: "Sales Returns", href: "/sales-returns", icon: ArrowLeftRight },
   { name: "Stock Movement", href: "/stock", icon: Store },
   { name: "Reports", href: "/reports", icon: BarChart },
+  { name: "Weighing Scale", href: "/scale", icon: ScaleIcon },
   { name: "Customer Orders", href: "/orders", icon: ClipboardList },
   { name: "Customer Portal", href: "/customer", icon: Smartphone },
 ];

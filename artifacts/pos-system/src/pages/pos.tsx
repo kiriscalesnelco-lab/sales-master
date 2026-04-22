@@ -16,9 +16,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search, Plus, Minus, Trash2, CreditCard, Banknote, Gift, ShoppingCart, Package,
-  FileCheck, Sparkles,
+  FileCheck, Sparkles, Scale as ScaleIcon, Power, PowerOff,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { loadScaleConfig, useScale } from "@/lib/scale";
 
 type CartItem = Product & { cartQty: number };
 
@@ -42,6 +43,27 @@ export default function Pos() {
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [payments, setPayments] = useState<CreatePaymentItem[]>([{ paymentType: "cash", amount: 0 }]);
   const createSale = useCreateSale();
+
+  // Weighing scale integration
+  const [scaleConfig] = useState(() => loadScaleConfig());
+  const [weighOpen, setWeighOpen] = useState(false);
+  const [weighProductId, setWeighProductId] = useState<string>("");
+  const scale = useScale(scaleConfig);
+  const scaleEnabled = scaleConfig.mode !== "off";
+
+  const captureWeight = () => {
+    const prod = products?.find(p => p.id === Number(weighProductId));
+    const w = scale.weight;
+    if (!prod || !w || w <= 0) {
+      toast({ title: "Select a product and capture a non-zero weight", variant: "destructive" });
+      return;
+    }
+    setCart(prev => [...prev, { ...prod, cartQty: Number(w.toFixed(3)) }]);
+    setWeighOpen(false);
+    setWeighProductId("");
+    scale.disconnect();
+    toast({ title: `Added ${w.toFixed(3)} kg of ${prod.name}` });
+  };
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -97,9 +119,16 @@ export default function Pos() {
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-6">
       <div className="flex-1 flex flex-col gap-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input placeholder="Search products by name or code..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input placeholder="Search products by name or code..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+          {scaleEnabled && (
+            <Button variant="outline" onClick={() => { setWeighOpen(true); scale.connect(); }}>
+              <ScaleIcon className="h-4 w-4 mr-1" /> Use Scale
+            </Button>
+          )}
         </div>
         <ScrollArea className="flex-1">
           <div className="grid grid-cols-3 gap-4 pb-4">
@@ -165,6 +194,50 @@ export default function Pos() {
           </Button>
         </div>
       </Card>
+
+      <Dialog open={weighOpen} onOpenChange={(o) => { setWeighOpen(o); if (!o) scale.disconnect(); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><ScaleIcon className="h-5 w-5" /> Weigh Item</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Product</Label>
+              <Select value={weighProductId} onValueChange={setWeighProductId}>
+                <SelectTrigger><SelectValue placeholder="Select weighable product" /></SelectTrigger>
+                <SelectContent>
+                  {products?.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.name} — ₹{Number(p.salesPrice).toFixed(2)}/kg</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="bg-muted/40 rounded-lg p-6 text-center">
+              <div className="text-5xl font-bold tabular-nums">
+                {scale.weight !== null ? scale.weight.toFixed(3) : "—.—"}
+                <span className="text-xl text-muted-foreground ml-2">kg</span>
+              </div>
+              <div className="mt-2 text-sm">
+                {scale.status === "live" && <span className="text-green-600 font-medium">● Live</span>}
+                {scale.status === "connecting" && <span className="text-amber-600 font-medium">Connecting…</span>}
+                {scale.status === "error" && <span className="text-destructive font-medium">{scale.error}</span>}
+                {scale.status === "idle" && <span className="text-muted-foreground">Disconnected</span>}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={scale.connect} disabled={scale.status === "live"} className="flex-1">
+                <Power className="h-4 w-4 mr-1" /> Connect
+              </Button>
+              <Button variant="outline" onClick={scale.disconnect} disabled={scale.status === "idle"} className="flex-1">
+                <PowerOff className="h-4 w-4 mr-1" /> Disconnect
+              </Button>
+              <Button variant="outline" onClick={scale.tare} disabled={scale.weight === null}>Tare</Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWeighOpen(false)}>Cancel</Button>
+            <Button onClick={captureWeight} disabled={!weighProductId || !scale.weight}>
+              Add to Cart
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={payDialogOpen} onOpenChange={setPayDialogOpen}>
         <DialogContent className="max-w-xl">
