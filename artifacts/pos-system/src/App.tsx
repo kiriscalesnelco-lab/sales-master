@@ -8,6 +8,16 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Pos from "@/pages/pos";
 import Products from "@/pages/products";
+import Categories from "@/pages/categories";
+import Brands from "@/pages/brands";
+import Customers from "@/pages/customers";
+import Suppliers from "@/pages/suppliers";
+import Purchases from "@/pages/purchases";
+import PurchaseReturns from "@/pages/purchase-returns";
+import Sales from "@/pages/sales";
+import SalesReturns from "@/pages/sales-returns";
+import Stock from "@/pages/stock";
+import Reports from "@/pages/reports";
 import CustomerLogin from "@/pages/customer-login";
 import CustomerShop from "@/pages/customer-shop";
 import OrdersPage from "@/pages/orders";
@@ -29,6 +39,16 @@ function AdminRouter() {
         <Route path="/" component={Dashboard} />
         <Route path="/pos" component={Pos} />
         <Route path="/products" component={Products} />
+        <Route path="/categories" component={Categories} />
+        <Route path="/brands" component={Brands} />
+        <Route path="/customers" component={Customers} />
+        <Route path="/suppliers" component={Suppliers} />
+        <Route path="/purchases" component={Purchases} />
+        <Route path="/purchase-returns" component={PurchaseReturns} />
+        <Route path="/sales" component={Sales} />
+        <Route path="/sales-returns" component={SalesReturns} />
+        <Route path="/stock" component={Stock} />
+        <Route path="/reports" component={Reports} />
         <Route path="/orders" component={OrdersPage} />
         <Route component={NotFound} />
       </Switch>
