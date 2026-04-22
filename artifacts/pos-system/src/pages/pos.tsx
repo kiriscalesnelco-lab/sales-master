@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search, Plus, Minus, Trash2, CreditCard, Banknote, Gift, ShoppingCart, Package,
-  FileCheck, Sparkles, Scale as ScaleIcon, Power, PowerOff, Smartphone,
+  FileCheck, Sparkles, Scale as ScaleIcon, Power, PowerOff, Smartphone, MessageCircle, CheckCircle2, Printer,
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import { useToast } from "@/hooks/use-toast";
@@ -53,6 +53,15 @@ export default function Pos() {
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [payments, setPayments] = useState<CreatePaymentItem[]>([{ paymentType: "cash", amount: 0 }]);
   const createSale = useCreateSale();
+
+  // Last completed sale (for success dialog with WhatsApp share)
+  const [lastSale, setLastSale] = useState<null | {
+    saleId: number;
+    total: number;
+    items: { name: string; qty: number; price: number }[];
+    customerName: string;
+    customerMobile: string;
+  }>(null);
 
   // UPI config
   const [upiCfg, setUpiCfg] = useState(() => {
@@ -124,13 +133,34 @@ export default function Pos() {
         payments: payments.filter(p => Number(p.amount) > 0).map(p => ({ paymentType: p.paymentType, amount: Number(p.amount) })),
       }
     }, {
-      onSuccess: () => {
+      onSuccess: (sale: any) => {
+        const cust = customers?.find((c: any) => String(c.id) === customerId);
+        setLastSale({
+          saleId: sale?.id ?? 0,
+          total: totalAmount,
+          items: cart.map(i => ({ name: i.name, qty: i.cartQty, price: Number(i.salesPrice) })),
+          customerName: cust?.name ?? "Customer",
+          customerMobile: cust?.mobile ?? "",
+        });
         toast({ title: "Sale completed successfully" });
         setCart([]); setCustomerId(""); setPayDialogOpen(false);
         qc.invalidateQueries();
       },
       onError: () => toast({ title: "Failed to complete sale", variant: "destructive" })
     });
+  };
+
+  const shareLastSaleWhatsApp = () => {
+    if (!lastSale) return;
+    const lines = lastSale.items
+      .map(i => `• ${i.name} x${i.qty} = ₹${(i.price * i.qty).toFixed(2)}`)
+      .join("\n");
+    const msg = `Hi ${lastSale.customerName}, thanks for your purchase at Retail POS!\n\nReceipt #${lastSale.saleId}\n${lines}\n\nTotal: ₹${lastSale.total.toFixed(2)}`;
+    const phone = (lastSale.customerMobile ?? "").replace(/\D/g, "");
+    const wa = phone
+      ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(wa, "_blank");
   };
 
   return (
@@ -333,6 +363,41 @@ export default function Pos() {
               Complete Sale
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sale Success / Share Receipt Dialog */}
+      <Dialog open={!!lastSale} onOpenChange={(o) => !o && setLastSale(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-6 w-6 text-green-600" />
+              Sale Completed
+            </DialogTitle>
+          </DialogHeader>
+          {lastSale && (
+            <div className="space-y-3">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                <p className="text-sm text-muted-foreground">Receipt #{lastSale.saleId}</p>
+                <p className="text-3xl font-bold text-green-700 mt-1">₹{lastSale.total.toFixed(2)}</p>
+                <p className="text-xs text-muted-foreground mt-1">{lastSale.items.length} item(s) • {lastSale.customerName}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" onClick={() => window.print()}>
+                  <Printer className="h-4 w-4 mr-2" /> Print
+                </Button>
+                <Button
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={shareLastSaleWhatsApp}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                </Button>
+              </div>
+              <Button className="w-full" variant="ghost" onClick={() => setLastSale(null)}>
+                New Sale
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
