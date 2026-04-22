@@ -107,11 +107,12 @@ export default function ScalePage() {
             <CardDescription>Test the connection and verify the live weight</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-muted/40 rounded-lg p-8 text-center">
-              <div className="text-6xl font-bold tabular-nums">
-                {scale.weight !== null ? scale.weight.toFixed(3) : "—.—"}
-                <span className="text-2xl font-normal text-muted-foreground ml-2">kg</span>
+            <div className="bg-black rounded-lg p-8 text-center relative overflow-hidden">
+              <div className="font-digital text-7xl text-red-500 relative" style={{ textShadow: "0 0 12px rgba(239,68,68,0.7)" }}>
+                <span className="absolute inset-0 text-red-500/10">{"8".repeat(7)}.888</span>
+                <span className="relative">{scale.weight !== null ? scale.weight.toFixed(3).padStart(8, " ") : "—.———"}</span>
               </div>
+              <div className="text-red-400/80 font-digital text-xl mt-2 tracking-widest">kg</div>
             </div>
             {scale.error && (
               <div className="text-sm text-destructive bg-destructive/10 rounded p-2">{scale.error}</div>

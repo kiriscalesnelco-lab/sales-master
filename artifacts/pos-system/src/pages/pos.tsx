@@ -208,11 +208,12 @@ export default function Pos() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="bg-muted/40 rounded-lg p-6 text-center">
-              <div className="text-5xl font-bold tabular-nums">
-                {scale.weight !== null ? scale.weight.toFixed(3) : "—.—"}
-                <span className="text-xl text-muted-foreground ml-2">kg</span>
+            <div className="bg-black rounded-lg p-6 text-center relative overflow-hidden">
+              <div className="font-digital text-6xl text-red-500 relative" style={{ textShadow: "0 0 10px rgba(239,68,68,0.7)" }}>
+                <span className="absolute inset-0 text-red-500/10">8888.888</span>
+                <span className="relative">{scale.weight !== null ? scale.weight.toFixed(3).padStart(8, " ") : "—.———"}</span>
               </div>
+              <div className="text-red-400/80 font-digital text-base mt-1 tracking-widest">kg</div>
               <div className="mt-2 text-sm">
                 {scale.status === "live" && <span className="text-green-600 font-medium">● Live</span>}
                 {scale.status === "connecting" && <span className="text-amber-600 font-medium">Connecting…</span>}
