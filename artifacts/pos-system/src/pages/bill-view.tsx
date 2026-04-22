@@ -6,7 +6,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import QRCode from "react-qr-code";
-import { Store, Printer } from "lucide-react";
+import { Store, Printer, MessageCircle } from "lucide-react";
 
 export default function BillView() {
   const params = useParams<{ id: string }>();
@@ -103,13 +103,25 @@ export default function BillView() {
               <p className="text-xs text-muted-foreground mt-2 font-mono">{bill.billNo}</p>
             </div>
 
-            <Button
-              className="w-full print:hidden"
-              variant="outline"
-              onClick={() => window.print()}
-            >
-              <Printer className="h-4 w-4 mr-2" /> Print this Bill
-            </Button>
+            <div className="grid grid-cols-2 gap-2 print:hidden">
+              <Button variant="outline" onClick={() => window.print()}>
+                <Printer className="h-4 w-4 mr-2" /> Print
+              </Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => {
+                  const url = window.location.href;
+                  const msg = `Hi ${bill.customerName}, here's your bill ${bill.billNo} for ₹${Number(bill.totalAmount).toFixed(2)} from Retail POS:\n${url}`;
+                  const phone = (bill.mobile ?? "").replace(/\D/g, "");
+                  const wa = phone
+                    ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+                    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                  window.open(wa, "_blank");
+                }}
+              >
+                <MessageCircle className="h-4 w-4 mr-2" /> Share on WhatsApp
+              </Button>
+            </div>
 
             <div className="text-center text-xs text-muted-foreground pt-2 pb-1">
               <p>Thank you for your purchase!</p>

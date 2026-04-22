@@ -336,6 +336,7 @@ export const PaymentTransactionPaymentType = {
   card: "card",
   voucher: "voucher",
   loyalty: "loyalty",
+  upi: "upi",
 } as const;
 
 export interface PaymentTransaction {
@@ -378,6 +379,7 @@ export const CreatePaymentItemPaymentType = {
   card: "card",
   voucher: "voucher",
   loyalty: "loyalty",
+  upi: "upi",
 } as const;
 
 export interface CreatePaymentItem {

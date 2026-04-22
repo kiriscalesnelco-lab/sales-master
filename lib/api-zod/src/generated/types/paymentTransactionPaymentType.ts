@@ -15,4 +15,5 @@ export const PaymentTransactionPaymentType = {
   card: "card",
   voucher: "voucher",
   loyalty: "loyalty",
+  upi: "upi",
 } as const;

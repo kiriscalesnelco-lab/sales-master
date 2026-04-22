@@ -1599,7 +1599,7 @@ components:
           type: integer
         paymentType:
           type: string
-          enum: [cash, cheque, card, voucher, loyalty]
+          enum: [cash, cheque, card, voucher, loyalty, upi]
         amount:
           type: number
       required:
@@ -1670,7 +1670,7 @@ components:
       properties:
         paymentType:
           type: string
-          enum: [cash, cheque, card, voucher, loyalty]
+          enum: [cash, cheque, card, voucher, loyalty, upi]
         amount:
           type: number
       required:

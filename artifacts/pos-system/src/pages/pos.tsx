@@ -16,8 +16,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search, Plus, Minus, Trash2, CreditCard, Banknote, Gift, ShoppingCart, Package,
-  FileCheck, Sparkles, Scale as ScaleIcon, Power, PowerOff,
+  FileCheck, Sparkles, Scale as ScaleIcon, Power, PowerOff, Smartphone,
 } from "lucide-react";
+import QRCode from "react-qr-code";
 import { useToast } from "@/hooks/use-toast";
 import { loadScaleConfig, useScale } from "@/lib/scale";
 
@@ -26,10 +27,19 @@ type CartItem = Product & { cartQty: number };
 const paymentMeta: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   cash: { label: "Cash", icon: <Banknote className="h-4 w-4" />, color: "text-green-600" },
   card: { label: "Card", icon: <CreditCard className="h-4 w-4" />, color: "text-blue-600" },
+  upi: { label: "UPI", icon: <Smartphone className="h-4 w-4" />, color: "text-indigo-600" },
   cheque: { label: "Cheque", icon: <FileCheck className="h-4 w-4" />, color: "text-purple-600" },
   voucher: { label: "Voucher", icon: <Gift className="h-4 w-4" />, color: "text-pink-600" },
   loyalty: { label: "Loyalty", icon: <Sparkles className="h-4 w-4" />, color: "text-amber-600" },
 };
+
+const UPI_KEY = "pos.upi.config";
+function loadUpiConfig() {
+  try { return JSON.parse(localStorage.getItem(UPI_KEY) ?? "{}"); } catch { return {}; }
+}
+function saveUpiConfig(cfg: { vpa: string; payeeName: string }) {
+  localStorage.setItem(UPI_KEY, JSON.stringify(cfg));
+}
 
 export default function Pos() {
   const { toast } = useToast();
@@ -43,6 +53,13 @@ export default function Pos() {
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [payments, setPayments] = useState<CreatePaymentItem[]>([{ paymentType: "cash", amount: 0 }]);
   const createSale = useCreateSale();
+
+  // UPI config
+  const [upiCfg, setUpiCfg] = useState(() => {
+    const c = loadUpiConfig();
+    return { vpa: c.vpa ?? "merchant@upi", payeeName: c.payeeName ?? "Retail POS" };
+  });
+  const persistUpi = (next: typeof upiCfg) => { setUpiCfg(next); saveUpiConfig(next); };
 
   // Weighing scale integration
   const [scaleConfig] = useState(() => loadScaleConfig());
@@ -277,6 +294,28 @@ export default function Pos() {
                 <Plus className="h-3 w-3 mr-1" /> Add another payment
               </Button>
             </div>
+
+            {payments.some(p => p.paymentType === "upi" && Number(p.amount) > 0) && (
+              <div className="border rounded-lg p-3 bg-indigo-50/50 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
+                  <Smartphone className="h-4 w-4" /> Scan UPI QR to pay
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="Merchant VPA (e.g. shop@upi)" value={upiCfg.vpa} onChange={e => persistUpi({ ...upiCfg, vpa: e.target.value })} />
+                  <Input placeholder="Payee Name" value={upiCfg.payeeName} onChange={e => persistUpi({ ...upiCfg, payeeName: e.target.value })} />
+                </div>
+                {payments.filter(p => p.paymentType === "upi" && Number(p.amount) > 0).map((p, i) => {
+                  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiCfg.vpa)}&pn=${encodeURIComponent(upiCfg.payeeName)}&am=${Number(p.amount).toFixed(2)}&cu=INR&tn=${encodeURIComponent("POS Payment")}`;
+                  return (
+                    <div key={i} className="flex flex-col items-center bg-white rounded p-3">
+                      <QRCode value={upiUrl} size={140} />
+                      <div className="text-xs text-muted-foreground mt-2 font-mono">{upiCfg.vpa}</div>
+                      <div className="text-sm font-bold mt-1">₹{Number(p.amount).toFixed(2)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3 text-sm pt-2 border-t">
               <div>Paid: <span className="font-bold">₹{paymentTotal.toFixed(2)}</span></div>
               <div className="text-right">

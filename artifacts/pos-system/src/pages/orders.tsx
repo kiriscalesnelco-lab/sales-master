@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import QRCode from "react-qr-code";
-import { Receipt, CheckCircle2, Eye, Printer, RefreshCw } from "lucide-react";
+import { Receipt, CheckCircle2, Eye, Printer, RefreshCw, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
@@ -235,19 +235,33 @@ export default function OrdersPage() {
                 <p className="text-xs text-muted-foreground mt-2">{bill.billNo}</p>
               </div>
 
-              <div className="flex gap-2 print:hidden">
-                <Button className="flex-1" onClick={handlePrint} variant="outline">
-                  <Printer className="h-4 w-4 mr-2" /> Print Bill
+              <div className="grid grid-cols-3 gap-2 print:hidden">
+                <Button onClick={handlePrint} variant="outline">
+                  <Printer className="h-4 w-4 mr-2" /> Print
                 </Button>
                 <Button
-                  className="flex-1"
+                  variant="outline"
                   onClick={() => {
                     const url = `${window.location.origin}/bill/${selectedOrderId}`;
                     navigator.clipboard.writeText(url);
                     toast({ title: "Bill link copied to clipboard!" });
                   }}
                 >
-                  Share Bill Link
+                  Copy Link
+                </Button>
+                <Button
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => {
+                    const url = `${window.location.origin}/bill/${selectedOrderId}`;
+                    const msg = `Hi ${bill.customerName}, here's your bill ${bill.billNo} for ₹${Number(bill.totalAmount).toFixed(2)} from Retail POS:\n${url}`;
+                    const phone = (bill.mobile ?? "").replace(/\D/g, "");
+                    const wa = phone
+                      ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+                      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                    window.open(wa, "_blank");
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
                 </Button>
               </div>
             </div>
