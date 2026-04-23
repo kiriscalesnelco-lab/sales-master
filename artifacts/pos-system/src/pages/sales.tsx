@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, TrendingUp } from "lucide-react";
+import { Eye, TrendingUp, FileText } from "lucide-react";
 
 export default function Sales() {
   const { data: sales } = useListSales({}, { query: { queryKey: getListSalesQueryKey({}) } });
@@ -38,7 +38,12 @@ export default function Sales() {
                   <TableCell>{s.customerName || "Walk-in"}</TableCell>
                   <TableCell className="text-right font-semibold">₹{Number(s.totalAmount).toFixed(2)}</TableCell>
                   <TableCell className="text-right">
-                    <Button size="sm" variant="outline" onClick={() => setSelectedId(s.id)}><Eye className="h-4 w-4 mr-1" /> View</Button>
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="outline" onClick={() => setSelectedId(s.id)}><Eye className="h-4 w-4 mr-1" /> View</Button>
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => window.open(`/sale-invoice/${s.id}`, "_blank")}>
+                        <FileText className="h-4 w-4 mr-1" /> Tally Invoice
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

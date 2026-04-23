@@ -23,6 +23,7 @@ import CustomerLogin from "@/pages/customer-login";
 import CustomerShop from "@/pages/customer-shop";
 import OrdersPage from "@/pages/orders";
 import BillView from "@/pages/bill-view";
+import SaleInvoice from "@/pages/sale-invoice";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/customer" component={CustomerLogin} />
       <Route path="/customer/shop" component={CustomerShop} />
       <Route path="/bill/:id" component={BillView} />
+      <Route path="/sale-invoice/:id" component={SaleInvoice} />
       <Route>{() => <AdminRouter />}</Route>
     </Switch>
   );
