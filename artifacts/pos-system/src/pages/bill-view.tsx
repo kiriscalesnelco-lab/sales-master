@@ -116,7 +116,7 @@ export default function BillView() {
         </div>
 
         {/* Invoice */}
-        <div className="bg-white border-2 border-black text-[12px] text-black font-serif">
+        <div className="bg-white border-2 border-black text-[12px] text-black" style={{ fontFamily: "Consolas, 'Courier New', monospace" }}>
           {/* Title bar */}
           <div className="text-center border-b-2 border-black py-1.5">
             <p className="text-xs font-semibold tracking-widest">TAX INVOICE</p>
