@@ -152,13 +152,22 @@ export default function OrdersPage() {
                           </Button>
                         )}
                         {order.billNo && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleViewBill(order.id)}
-                          >
-                            <Eye className="h-4 w-4 mr-1" /> View Bill
-                          </Button>
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleViewBill(order.id)}
+                            >
+                              <Eye className="h-4 w-4 mr-1" /> View Bill
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => window.open(`/bill/${order.id}`, "_blank")}
+                            >
+                              <FileText className="h-4 w-4 mr-1" /> Tally Invoice
+                            </Button>
+                          </>
                         )}
                       </div>
                     </TableCell>
