@@ -65,16 +65,16 @@ export default function SaleInvoice() {
     );
   }
 
-  const total = Number(sale.totalAmount);
-  const taxable = total / (1 + GST_RATE);
-  const totalGst = total - taxable;
+  // GST exclusive — line prices are taxable, tax added on top
+  const items = sale.details.map((d: any) => {
+    const lineTaxable = Number(d.salesPrice) * Number(d.qty) - Number(d.discount ?? 0);
+    return { name: d.productName, qty: Number(d.qty), price: Number(d.salesPrice), lineTaxable };
+  });
+  const taxable = items.reduce((s, d) => s + d.lineTaxable, 0);
+  const totalGst = taxable * GST_RATE;
   const cgst = totalGst / 2;
   const sgst = totalGst / 2;
-
-  const items = sale.details.map((d: any) => {
-    const lineTotal = Number(d.salesPrice) * Number(d.qty) - Number(d.discount ?? 0);
-    return { name: d.productName, qty: Number(d.qty), price: Number(d.salesPrice), lineTotal };
-  });
+  const total = taxable + totalGst;
 
   const customerName = sale.customerName || "Walk-in Customer";
 
@@ -163,7 +163,7 @@ export default function SaleInvoice() {
                 <th className="border-r border-black p-1.5 text-left">Description of Goods</th>
                 <th className="border-r border-black p-1.5 text-center w-20">HSN/SAC</th>
                 <th className="border-r border-black p-1.5 text-center w-16">Quantity</th>
-                <th className="border-r border-black p-1.5 text-right w-20">Rate<br/><span className="text-[9px] font-normal">(incl. GST)</span></th>
+                <th className="border-r border-black p-1.5 text-right w-20">Rate<br/><span className="text-[9px] font-normal">(excl. GST)</span></th>
                 <th className="border-r border-black p-1.5 text-center w-10">per</th>
                 <th className="p-1.5 text-right w-24">Amount</th>
               </tr>
@@ -177,7 +177,7 @@ export default function SaleInvoice() {
                   <td className="border-r border-black p-1.5 text-center">{d.qty}</td>
                   <td className="border-r border-black p-1.5 text-right">{d.price.toFixed(2)}</td>
                   <td className="border-r border-black p-1.5 text-center">Nos</td>
-                  <td className="p-1.5 text-right">{d.lineTotal.toFixed(2)}</td>
+                  <td className="p-1.5 text-right">{d.lineTaxable.toFixed(2)}</td>
                 </tr>
               ))}
               {Array.from({ length: Math.max(0, 4 - items.length) }).map((_, i) => (

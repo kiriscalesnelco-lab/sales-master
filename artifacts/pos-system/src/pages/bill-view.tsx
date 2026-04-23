@@ -79,19 +79,17 @@ export default function BillView() {
     );
   }
 
-  // Compute GST breakdown — assume prices are GST-inclusive at 18%
-  const total = Number(bill.totalAmount);
-  const taxable = total / (1 + GST_RATE);
-  const totalGst = total - taxable;
+  // GST exclusive — line prices are taxable, tax added on top
+  const detailsWithBreakdown = bill.details.map((d) => {
+    const lineTaxable = Number(d.price) * Number(d.qty);
+    const lineGst = lineTaxable * GST_RATE;
+    return { ...d, lineTaxable, lineGst, lineTotal: lineTaxable + lineGst };
+  });
+  const taxable = detailsWithBreakdown.reduce((s, d) => s + d.lineTaxable, 0);
+  const totalGst = taxable * GST_RATE;
   const cgst = totalGst / 2;
   const sgst = totalGst / 2;
-
-  const detailsWithBreakdown = bill.details.map((d) => {
-    const lineTotal = Number(d.lineTotal);
-    const lineTaxable = lineTotal / (1 + GST_RATE);
-    const lineGst = lineTotal - lineTaxable;
-    return { ...d, lineTaxable, lineGst, lineTotal };
-  });
+  const total = taxable + totalGst;
 
   const handlePrint = () => window.print();
   const handleWhatsApp = () => {
@@ -197,7 +195,7 @@ export default function BillView() {
                 <th className="border-r border-black p-1.5 text-left">Description of Goods</th>
                 <th className="border-r border-black p-1.5 text-center w-20">HSN/SAC</th>
                 <th className="border-r border-black p-1.5 text-center w-16">Quantity</th>
-                <th className="border-r border-black p-1.5 text-right w-20">Rate<br/><span className="text-[9px] font-normal">(incl. GST)</span></th>
+                <th className="border-r border-black p-1.5 text-right w-20">Rate<br/><span className="text-[9px] font-normal">(excl. GST)</span></th>
                 <th className="border-r border-black p-1.5 text-center w-10">per</th>
                 <th className="p-1.5 text-right w-24">Amount</th>
               </tr>
@@ -211,7 +209,7 @@ export default function BillView() {
                   <td className="border-r border-black p-1.5 text-center">{Number(d.qty)}</td>
                   <td className="border-r border-black p-1.5 text-right">{Number(d.price).toFixed(2)}</td>
                   <td className="border-r border-black p-1.5 text-center">Nos</td>
-                  <td className="p-1.5 text-right">{d.lineTotal.toFixed(2)}</td>
+                  <td className="p-1.5 text-right">{d.lineTaxable.toFixed(2)}</td>
                 </tr>
               ))}
               {/* Spacer rows for Tally look */}
