@@ -383,7 +383,7 @@ export default function Pos() {
                 <p className="text-xs text-muted-foreground mt-1">{lastSale.items.length} item(s) • {lastSale.customerName}</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={() => window.print()}>
+                <Button variant="outline" onClick={() => window.open(`${import.meta.env.BASE_URL}sale-invoice/${lastSale.saleId}`, "_blank")}>
                   <Printer className="h-4 w-4 mr-2" /> Print
                 </Button>
                 <Button
