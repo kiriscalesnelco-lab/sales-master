@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import QRCode from "react-qr-code";
-import { Receipt, CheckCircle2, Eye, Printer, RefreshCw, MessageCircle } from "lucide-react";
+import { Receipt, CheckCircle2, Eye, Printer, RefreshCw, MessageCircle, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
@@ -235,7 +235,13 @@ export default function OrdersPage() {
                 <p className="text-xs text-muted-foreground mt-2">{bill.billNo}</p>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 print:hidden">
+              <div className="grid grid-cols-2 gap-2 print:hidden">
+                <Button
+                  className="col-span-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => window.open(`/bill/${selectedOrderId}`, "_blank")}
+                >
+                  <FileText className="h-4 w-4 mr-2" /> Open Tally Invoice
+                </Button>
                 <Button onClick={handlePrint} variant="outline">
                   <Printer className="h-4 w-4 mr-2" /> Print
                 </Button>
@@ -250,7 +256,7 @@ export default function OrdersPage() {
                   Copy Link
                 </Button>
                 <Button
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="col-span-2 bg-green-600 hover:bg-green-700 text-white"
                   onClick={() => {
                     const url = `${window.location.origin}/bill/${selectedOrderId}`;
                     const msg = `Hi ${bill.customerName}, here's your bill ${bill.billNo} for ₹${Number(bill.totalAmount).toFixed(2)} from Retail POS:\n${url}`;
@@ -261,7 +267,7 @@ export default function OrdersPage() {
                     window.open(wa, "_blank");
                   }}
                 >
-                  <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
+                  <MessageCircle className="h-4 w-4 mr-2" /> Share on WhatsApp
                 </Button>
               </div>
             </div>
