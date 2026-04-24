@@ -65,6 +65,7 @@ export interface Product {
   hasExpiry: boolean;
   valuationMethod: ProductValuationMethod;
   isActive: boolean;
+  taxRate: number;
   /** @nullable */
   categoryName?: string | null;
   /** @nullable */
@@ -112,6 +113,8 @@ export interface CreateProductBody {
   hasExpiry?: boolean;
   valuationMethod?: CreateProductBodyValuationMethod;
   isActive?: boolean;
+  /** @nullable */
+  taxRate?: number | null;
 }
 
 /**
@@ -166,6 +169,8 @@ export interface UpdateProductBody {
   valuationMethod?: UpdateProductBodyValuationMethod;
   /** @nullable */
   isActive?: boolean | null;
+  /** @nullable */
+  taxRate?: number | null;
 }
 
 export interface Supplier {
@@ -325,6 +330,7 @@ export interface SaleDetail {
   salesPrice: number;
   discount: number;
   qty: number;
+  taxRate: number;
 }
 
 export type PaymentTransactionPaymentType =
@@ -569,6 +575,7 @@ export interface CustomerBillDetailItem {
   price: number;
   qty: number;
   lineTotal: number;
+  taxRate: number;
 }
 
 export interface CustomerBill {

@@ -35,6 +35,7 @@ const blank = {
   hasExpiry: false,
   valuationMethod: "fifo" as "fifo" | "lifo" | "average",
   isActive: true,
+  taxRate: 18,
 };
 
 export default function Products() {
@@ -76,6 +77,7 @@ export default function Products() {
           hasExpiry: form.hasExpiry,
           valuationMethod: form.valuationMethod,
           isActive: form.isActive,
+          taxRate: Number(form.taxRate),
         },
       });
       toast({ title: "Product added" });
@@ -204,6 +206,19 @@ export default function Products() {
                 <SelectContent>
                   <SelectItem value="fixed">Fixed (₹)</SelectItem>
                   <SelectItem value="percentage">Percentage (%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>GST Tax Rate</Label>
+              <Select value={String(form.taxRate)} onValueChange={v => update("taxRate", Number(v))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">0% (Exempt)</SelectItem>
+                  <SelectItem value="5">5% GST</SelectItem>
+                  <SelectItem value="12">12% GST</SelectItem>
+                  <SelectItem value="18">18% GST</SelectItem>
+                  <SelectItem value="28">28% GST</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { customerOrdersTable, customerOrderDetailsTable } from "@workspace/db/schema";
+import { customerOrdersTable, customerOrderDetailsTable, productsTable } from "@workspace/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 const router = Router();
@@ -19,8 +19,17 @@ async function fetchOrderWithDetails(id: number) {
   if (!order) return null;
 
   const details = await db
-    .select()
+    .select({
+      id: customerOrderDetailsTable.id,
+      orderId: customerOrderDetailsTable.orderId,
+      productId: customerOrderDetailsTable.productId,
+      productName: customerOrderDetailsTable.productName,
+      price: customerOrderDetailsTable.price,
+      qty: customerOrderDetailsTable.qty,
+      taxRate: productsTable.taxRate,
+    })
     .from(customerOrderDetailsTable)
+    .leftJoin(productsTable, eq(customerOrderDetailsTable.productId, productsTable.id))
     .where(eq(customerOrderDetailsTable.orderId, id));
 
   return {
@@ -39,6 +48,7 @@ async function fetchOrderWithDetails(id: number) {
       productName: d.productName,
       price: Number(d.price),
       qty: Number(d.qty),
+      taxRate: Number(d.taxRate ?? 18),
     })),
   };
 }
@@ -107,6 +117,7 @@ router.get("/orders/:id/bill", async (req, res) => {
     price: d.price,
     qty: d.qty,
     lineTotal: Number((d.price * d.qty).toFixed(2)),
+    taxRate: d.taxRate,
   }));
 
   const qrData = JSON.stringify({

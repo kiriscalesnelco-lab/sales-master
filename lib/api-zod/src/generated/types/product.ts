@@ -27,6 +27,7 @@ export interface Product {
   hasExpiry: boolean;
   valuationMethod: ProductValuationMethod;
   isActive: boolean;
+  taxRate: number;
   /** @nullable */
   categoryName?: string | null;
   /** @nullable */

@@ -120,6 +120,7 @@ export const ListProductsResponseItem = zod
     hasExpiry: zod.boolean(),
     valuationMethod: zod.enum(["fifo", "lifo", "average"]),
     isActive: zod.boolean(),
+    taxRate: zod.number(),
     categoryName: zod.string().nullish(),
     brandName: zod.string().nullish(),
     createdAt: zod.string(),
@@ -148,6 +149,7 @@ export const CreateProductBody = zod.object({
   hasExpiry: zod.boolean().optional(),
   valuationMethod: zod.enum(["fifo", "lifo", "average"]).optional(),
   isActive: zod.boolean().optional(),
+  taxRate: zod.number().nullish(),
 });
 
 export const GetProductParams = zod.object({
@@ -170,6 +172,7 @@ export const GetProductResponse = zod
     hasExpiry: zod.boolean(),
     valuationMethod: zod.enum(["fifo", "lifo", "average"]),
     isActive: zod.boolean(),
+    taxRate: zod.number(),
     categoryName: zod.string().nullish(),
     brandName: zod.string().nullish(),
     createdAt: zod.string(),
@@ -207,6 +210,7 @@ export const UpdateProductBody = zod.object({
     ])
     .nullish(),
   isActive: zod.boolean().nullish(),
+  taxRate: zod.number().nullish(),
 });
 
 export const UpdateProductResponse = zod.object({
@@ -224,6 +228,7 @@ export const UpdateProductResponse = zod.object({
   hasExpiry: zod.boolean(),
   valuationMethod: zod.enum(["fifo", "lifo", "average"]),
   isActive: zod.boolean(),
+  taxRate: zod.number(),
   categoryName: zod.string().nullish(),
   brandName: zod.string().nullish(),
   createdAt: zod.string(),
@@ -592,6 +597,7 @@ export const ListSalesResponseItem = zod
           salesPrice: zod.number(),
           discount: zod.number(),
           qty: zod.number(),
+          taxRate: zod.number(),
         }),
       ),
       payments: zod.array(
@@ -668,6 +674,7 @@ export const GetSaleResponse = zod
           salesPrice: zod.number(),
           discount: zod.number(),
           qty: zod.number(),
+          taxRate: zod.number(),
         }),
       ),
       payments: zod.array(
@@ -853,6 +860,7 @@ export const GetRecentSalesResponseItem = zod
           salesPrice: zod.number(),
           discount: zod.number(),
           qty: zod.number(),
+          taxRate: zod.number(),
         }),
       ),
       payments: zod.array(
@@ -897,6 +905,7 @@ export const GetLowStockProductsResponseItem = zod
     hasExpiry: zod.boolean(),
     valuationMethod: zod.enum(["fifo", "lifo", "average"]),
     isActive: zod.boolean(),
+    taxRate: zod.number(),
     categoryName: zod.string().nullish(),
     brandName: zod.string().nullish(),
     createdAt: zod.string(),
@@ -1141,6 +1150,7 @@ export const GetCustomerOrderBillResponse = zod.object({
       price: zod.number(),
       qty: zod.number(),
       lineTotal: zod.number(),
+      taxRate: zod.number(),
     }),
   ),
   qrData: zod.string(),

@@ -43,6 +43,7 @@ async function getSaleWithDetails(id: number) {
       salesPrice: saleDetailsTable.salesPrice,
       discount: saleDetailsTable.discount,
       qty: saleDetailsTable.qty,
+      taxRate: productsTable.taxRate,
     })
     .from(saleDetailsTable)
     .leftJoin(productsTable, eq(saleDetailsTable.productId, productsTable.id))
@@ -61,6 +62,7 @@ async function getSaleWithDetails(id: number) {
       salesPrice: Number(d.salesPrice),
       discount: Number(d.discount),
       qty: Number(d.qty),
+      taxRate: Number(d.taxRate ?? 18),
     })),
     payments: payments.map(p => ({ ...p, amount: Number(p.amount) })),
   };
@@ -106,6 +108,7 @@ router.get("/sales", async (req, res): Promise<void> => {
       salesPrice: saleDetailsTable.salesPrice,
       discount: saleDetailsTable.discount,
       qty: saleDetailsTable.qty,
+      taxRate: productsTable.taxRate,
     })
     .from(saleDetailsTable)
     .leftJoin(productsTable, eq(saleDetailsTable.productId, productsTable.id));
@@ -134,6 +137,7 @@ router.get("/sales", async (req, res): Promise<void> => {
       salesPrice: Number(d.salesPrice),
       discount: Number(d.discount),
       qty: Number(d.qty),
+      taxRate: Number(d.taxRate ?? 18),
     })),
     payments: (paymentsBySale.get(s.id) ?? []).map(p => ({ ...p, amount: Number(p.amount) })),
   })));

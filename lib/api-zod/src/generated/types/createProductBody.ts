@@ -27,4 +27,6 @@ export interface CreateProductBody {
   hasExpiry?: boolean;
   valuationMethod?: CreateProductBodyValuationMethod;
   isActive?: boolean;
+  /** @nullable */
+  taxRate?: number | null;
 }

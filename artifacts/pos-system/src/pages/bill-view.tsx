@@ -19,7 +19,6 @@ const COMPANY = {
   pan: "AAAAA0000A",
 };
 
-const GST_RATE = 0.18;
 const HSN_DEFAULT = "9999";
 
 function numberToWordsIndian(num: number): string {
@@ -79,17 +78,27 @@ export default function BillView() {
     );
   }
 
-  // GST exclusive — line prices are taxable, tax added on top
+  // GST exclusive — line prices are taxable, tax added on top, per-product rate
   const detailsWithBreakdown = bill.details.map((d) => {
     const lineTaxable = Number(d.price) * Number(d.qty);
-    const lineGst = lineTaxable * GST_RATE;
-    return { ...d, lineTaxable, lineGst, lineTotal: lineTaxable + lineGst };
+    const taxRate = Number((d as any).taxRate ?? 18);
+    const lineGst = lineTaxable * (taxRate / 100);
+    return { ...d, lineTaxable, lineGst, lineTotal: lineTaxable + lineGst, taxRate };
   });
   const taxable = detailsWithBreakdown.reduce((s, d) => s + d.lineTaxable, 0);
-  const totalGst = taxable * GST_RATE;
+  const totalGst = detailsWithBreakdown.reduce((s, d) => s + d.lineGst, 0);
   const cgst = totalGst / 2;
   const sgst = totalGst / 2;
   const total = taxable + totalGst;
+
+  const hsnGroups = Object.values(detailsWithBreakdown.reduce((acc: Record<string, { rate: number; taxable: number; cgst: number; sgst: number }>, d) => {
+    const key = String(d.taxRate);
+    if (!acc[key]) acc[key] = { rate: d.taxRate, taxable: 0, cgst: 0, sgst: 0 };
+    acc[key].taxable += d.lineTaxable;
+    acc[key].cgst += d.lineGst / 2;
+    acc[key].sgst += d.lineGst / 2;
+    return acc;
+  }, {}));
 
   const handlePrint = () => window.print();
   const handleWhatsApp = () => {
@@ -234,24 +243,28 @@ export default function BillView() {
                 <td className="border-r border-black"></td>
                 <td className="p-1.5 text-right">{taxable.toFixed(2)}</td>
               </tr>
-              <tr>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black p-1.5 text-right italic">Add: CGST @ 9%</td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="p-1.5 text-right">{cgst.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black p-1.5 text-right italic">Add: SGST @ 9%</td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="border-r border-black"></td>
-                <td className="p-1.5 text-right">{sgst.toFixed(2)}</td>
-              </tr>
+              {hsnGroups.map((g) => (
+                <tr key={`cgst-${g.rate}`}>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black p-1.5 text-right italic">Add: CGST @ {(g.rate / 2).toFixed(g.rate % 2 ? 1 : 0)}%</td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="p-1.5 text-right">{g.cgst.toFixed(2)}</td>
+                </tr>
+              ))}
+              {hsnGroups.map((g) => (
+                <tr key={`sgst-${g.rate}`}>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black p-1.5 text-right italic">Add: SGST @ {(g.rate / 2).toFixed(g.rate % 2 ? 1 : 0)}%</td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="border-r border-black"></td>
+                  <td className="p-1.5 text-right">{g.sgst.toFixed(2)}</td>
+                </tr>
+              ))}
               <tr className="border-t-2 border-black font-bold">
                 <td className="border-r border-black p-1.5 text-center">Total</td>
                 <td className="border-r border-black"></td>
@@ -289,15 +302,17 @@ export default function BillView() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border-r border-black p-1.5 text-center">{HSN_DEFAULT}</td>
-                  <td className="border-r border-black p-1.5 text-right">{taxable.toFixed(2)}</td>
-                  <td className="border-r border-black p-1.5 text-center">9%</td>
-                  <td className="border-r border-black p-1.5 text-right">{cgst.toFixed(2)}</td>
-                  <td className="border-r border-black p-1.5 text-center">9%</td>
-                  <td className="border-r border-black p-1.5 text-right">{sgst.toFixed(2)}</td>
-                  <td className="p-1.5 text-right">{totalGst.toFixed(2)}</td>
-                </tr>
+                {hsnGroups.map((g) => (
+                  <tr key={g.rate}>
+                    <td className="border-r border-black p-1.5 text-center">{HSN_DEFAULT}</td>
+                    <td className="border-r border-black p-1.5 text-right">{g.taxable.toFixed(2)}</td>
+                    <td className="border-r border-black p-1.5 text-center">{(g.rate / 2).toFixed(g.rate % 2 ? 1 : 0)}%</td>
+                    <td className="border-r border-black p-1.5 text-right">{g.cgst.toFixed(2)}</td>
+                    <td className="border-r border-black p-1.5 text-center">{(g.rate / 2).toFixed(g.rate % 2 ? 1 : 0)}%</td>
+                    <td className="border-r border-black p-1.5 text-right">{g.sgst.toFixed(2)}</td>
+                    <td className="p-1.5 text-right">{(g.cgst + g.sgst).toFixed(2)}</td>
+                  </tr>
+                ))}
                 <tr className="border-t border-black font-bold">
                   <td className="border-r border-black p-1.5 text-right">Total</td>
                   <td className="border-r border-black p-1.5 text-right">{taxable.toFixed(2)}</td>

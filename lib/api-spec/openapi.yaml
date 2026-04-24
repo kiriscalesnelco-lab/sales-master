@@ -1171,6 +1171,8 @@ components:
           enum: [fifo, lifo, average]
         isActive:
           type: boolean
+        taxRate:
+          type: number
         categoryName:
           type: ["string", "null"]
         brandName:
@@ -1188,6 +1190,7 @@ components:
         - hasExpiry
         - valuationMethod
         - isActive
+        - taxRate
         - createdAt
 
     ProductWithStock:
@@ -1231,6 +1234,8 @@ components:
           enum: [fifo, lifo, average]
         isActive:
           type: boolean
+        taxRate:
+          type: ["number", "null"]
       required:
         - name
         - salesPrice
@@ -1267,6 +1272,8 @@ components:
           enum: [fifo, lifo, average, null]
         isActive:
           type: ["boolean", "null"]
+        taxRate:
+          type: ["number", "null"]
 
     Supplier:
       type: object
@@ -1580,6 +1587,8 @@ components:
           type: number
         qty:
           type: number
+        taxRate:
+          type: number
       required:
         - id
         - saleId
@@ -1589,6 +1598,7 @@ components:
         - salesPrice
         - discount
         - qty
+        - taxRate
 
     PaymentTransaction:
       type: object
@@ -2059,11 +2069,14 @@ components:
           type: number
         lineTotal:
           type: number
+        taxRate:
+          type: number
       required:
         - productName
         - price
         - qty
         - lineTotal
+        - taxRate
 
     CustomerBill:
       type: object

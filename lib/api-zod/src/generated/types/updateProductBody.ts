@@ -35,4 +35,6 @@ export interface UpdateProductBody {
   valuationMethod?: UpdateProductBodyValuationMethod;
   /** @nullable */
   isActive?: boolean | null;
+  /** @nullable */
+  taxRate?: number | null;
 }

@@ -19,6 +19,7 @@ export const productsTable = pgTable("products", {
   hasExpiry: boolean("has_expiry").notNull().default(false),
   valuationMethod: text("valuation_method").notNull().default("fifo"),
   isActive: boolean("is_active").notNull().default(true),
+  taxRate: numeric("tax_rate", { precision: 5, scale: 2 }).notNull().default("18"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

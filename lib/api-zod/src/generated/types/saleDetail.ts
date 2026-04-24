@@ -15,4 +15,5 @@ export interface SaleDetail {
   salesPrice: number;
   discount: number;
   qty: number;
+  taxRate: number;
 }

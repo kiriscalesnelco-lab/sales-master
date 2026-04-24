@@ -11,4 +11,5 @@ export interface CustomerBillDetailItem {
   price: number;
   qty: number;
   lineTotal: number;
+  taxRate: number;
 }
