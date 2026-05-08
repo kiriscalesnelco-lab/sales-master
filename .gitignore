@@ -47,3 +47,42 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# 🔐 SECURITY: NEVER commit environment variables!
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+.env.test
+
+# 🔐 Sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+secret*
+private*
+credentials*
+token*
+
+# 🔐 Database files (local SQLite/PostgreSQL backups)
+*.db
+*.sqlite
+*.sqlite3
+*.psql
+*.sql
+
+# 🔐 API keys and secrets
+.aws/
+.gcloud/
+config.json
+secrets.json
+
+# 🔐 Build outputs (contain secrets sometimes)
+.build/
+dist/
+
+# 🔐 Logs (may contain sensitive info)
+*.log
+logs/
