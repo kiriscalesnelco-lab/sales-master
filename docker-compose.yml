@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: pos-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-posuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pospass123}
+      POSTGRES_DB: ${DB_NAME:-pos_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-posuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pos-network
+
+  # API Server + Frontend
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pos-app
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${DB_USER:-posuser}:${DB_PASSWORD:-pospass123}@postgres:5432/${DB_NAME:-pos_db}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/artifacts/api-server/dist
+      - /app/artifacts/pos-system/dist
+    networks:
+      - pos-network
+    command: pnpm --filter @workspace/api-server run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  pos-network:
+    driver: bridge
