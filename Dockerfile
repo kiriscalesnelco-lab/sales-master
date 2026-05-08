@@ -1,75 +1,57 @@
 # Multi-stage build for POS System
-# Stage 1: Build backend and frontend
+# Stage 1: Build all packages (backend + frontend)
 FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# Install pnpm
+# Install pnpm globally
 RUN npm install -g pnpm@9
 
-# Copy workspace files
+# Copy workspace configuration
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json tsconfig.json ./
 
-# Copy all packages
+# Copy all source files
 COPY artifacts ./artifacts
 COPY lib ./lib
 COPY scripts ./scripts
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install all dependencies (including dev)
+RUN pnpm install --frozen-lockfile --strict-peer-dependencies=false
 
-# Build everything
+# Build all packages (backend + frontend)
 RUN pnpm run build
 
-# Stage 2: Build frontend (React)
-FROM node:24-alpine AS frontend-builder
-
-WORKDIR /app
-
-RUN npm install -g pnpm@9
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json tsconfig.json ./
-COPY artifacts/pos-system ./artifacts/pos-system
-COPY lib ./lib
-
-RUN pnpm install --frozen-lockfile
-
-WORKDIR /app/artifacts/pos-system
-
-RUN pnpm run build
-
-# Stage 3: Production image
+# Stage 2: Production image
 FROM node:24-alpine
 
 WORKDIR /app
 
-# Install pnpm in production image
+# Install pnpm in production image for production dependency installation
 RUN npm install -g pnpm@9
 
-# Copy workspace files
+# Copy workspace configuration
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json tsconfig.json ./
 
-# Copy built artifacts and sources
+# Copy built artifacts from builder stage
 COPY --from=builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
+COPY --from=builder /app/artifacts/api-server/src/lib ./artifacts/api-server/src/lib
+COPY --from=builder /app/artifacts/pos-system/dist ./artifacts/pos-system/dist
 COPY --from=builder /app/lib/db/dist ./lib/db/dist
 COPY --from=builder /app/lib/api-zod/dist ./lib/api-zod/dist
 COPY --from=builder /app/lib/api-client-react/dist ./lib/api-client-react/dist
 
-# Copy frontend build
-COPY --from=frontend-builder /app/artifacts/pos-system/dist ./artifacts/pos-system/dist
-
-# Copy package.json files for runtime dependencies resolution
+# Copy package.json files for dependency resolution
 COPY artifacts/api-server/package.json ./artifacts/api-server/
 COPY lib/db/package.json ./lib/db/
 COPY lib/api-zod/package.json ./lib/api-zod/
 COPY lib/api-client-react/package.json ./lib/api-client-react/
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --production
+# Install production dependencies only (no dev dependencies)
+RUN pnpm install --frozen-lockfile --production --strict-peer-dependencies=false
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 EXPOSE 3000
 
