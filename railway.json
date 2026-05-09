@@ -7,7 +7,6 @@
     "numReplicas": 1,
     "startCommand": "node --enable-source-maps artifacts/api-server/dist/index.mjs",
     "restartPolicyMaxRetries": 5,
-    "restartPolicyType": "on-failure",
     "healthchecks": {
       "cpu": {
         "percentage": 80
