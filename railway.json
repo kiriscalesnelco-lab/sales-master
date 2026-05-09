@@ -1,6 +1,7 @@
 {
   "build": {
-    "builder": "RAILPACK"
+    "builder": "RAILPACK",
+    "buildCommand": "pnpm install && cd artifacts/pos-system && pnpm run build"
   },
   "deploy": {
     "startCommand": "cd artifacts/pos-system && pnpm run start",
