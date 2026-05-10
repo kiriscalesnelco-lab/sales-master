@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -16,10 +17,52 @@ build/
 
 # Logs
 *.log
+=======
+# Railway Build Optimization
+
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (will be reinstalled)
+node_modules
+.pnpm-store
+
+# Build outputs (will be rebuilt)
+dist
+build
+.next
+out
+
+# Development files
+.env.local
+.env.development
+.env.test
+.DS_Store
+Thumbs.db
+
+# IDE and Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+
+# Testing
+coverage
+.nyc_output
+*.lcov
+
+# Logs
+>>>>>>> d944a4a5605afeb6b82d218e98adcba3f8de0b45
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+<<<<<<< HEAD
 
 # Environment files
 .env
@@ -41,3 +84,24 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+=======
+lerna-debug.log*
+
+# Documentation
+docs
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.circleci
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Root config files (optional to exclude)
+# .env.example
+# railway.json
+>>>>>>> d944a4a5605afeb6b82d218e98adcba3f8de0b45
