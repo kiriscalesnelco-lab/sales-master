@@ -1,12 +1,52 @@
 # Railway Build Optimization
+# For Docker builds, Railway clones from GitHub
+# Only development/non-essential files should be excluded
 
-# Git and version control
+# Dependencies - will be installed during build
+node_modules
+.pnpm-store
+
+# Build artifacts - will be rebuilt
+dist
+build
+.next
+out
+
+# Version control
 .git
 .gitignore
-.gitattributes
 
-# Dependencies (will be reinstalled)
-node_modules
+# Development files
+.env.local
+.env.test.local
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage
+.nyc_output
+
+# CI/CD
+.github/workflows
+.gitlab-ci.yml
+.circleci
+
+# Development/documentation only
+*.tmp
+*.temp
 .pnpm-store
 
 # Build outputs (will be rebuilt)
@@ -39,52 +79,14 @@ coverage
 .nyc_output
 *.lcov
 
-# Logs
->>>>>>> d944a4a5605afeb6b82d218e98adcba3f8de0b45
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-<<<<<<< HEAD
-
 # Environment files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.temp
-=======
-lerna-debug.log*
-
-# Documentation
-docs
-*.md
 
 # CI/CD
 .github
 .gitlab-ci.yml
 .circleci
 
-# Docker
-Dockerfile
-docker-compose*.yml
-.dockerignore
-
-# Root config files (optional to exclude)
-# .env.example
-# railway.json
->>>>>>> d944a4a5605afeb6b82d218e98adcba3f8de0b45
+# Do NOT exclude Docker files - they are needed for build
+# Dockerfile is REQUIRED for Railway Docker builds
+# docker-compose.yml is needed for local development
