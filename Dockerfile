@@ -16,7 +16,7 @@ COPY lib ./lib
 COPY scripts ./scripts
 
 # Install all dependencies (including dev)
-RUN pnpm install --frozen-lockfile --strict-peer-dependencies=false
+RUN pnpm install --frozen-lockfile
 
 # Build all packages (backend + frontend)
 RUN pnpm run build
@@ -47,7 +47,7 @@ COPY lib/api-zod/package.json ./lib/api-zod/
 COPY lib/api-client-react/package.json ./lib/api-client-react/
 
 # Install production dependencies only (no dev dependencies)
-RUN pnpm install --frozen-lockfile --production --strict-peer-dependencies=false
+RUN pnpm install --frozen-lockfile --production
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
