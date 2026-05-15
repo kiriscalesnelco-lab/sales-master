@@ -1,4 +1,4 @@
-# Multi-stage build for POS System
+# Multi-stage build for POS System  
 # Stage 1: Build all packages (backend + frontend)
 FROM node:24-alpine AS builder
 
